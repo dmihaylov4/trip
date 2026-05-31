@@ -414,31 +414,48 @@ function clearForm() {
 async function analyzeAndAdd() {
   const text = document.getElementById('listing-text').value.trim();
   const url  = document.getElementById('listing-url').value.trim();
-  if (!text && !url) { alert('Please paste some listing info or a URL first.'); return; }
+
+  if (!text && !url) {
+    alert('Please paste some listing info or a URL first.');
+    return;
+  }
+  if (url && !text) {
+    showUrlHint();
+    return;
+  }
+
+  // Clear previous errors/hints
+  ['url-hint','analyze-error'].forEach(id => { const el = document.getElementById(id); if(el) el.remove(); });
 
   const loader = document.getElementById('loading-indicator');
   loader.classList.add('active');
 
-  const prompt = `You are a travel planning assistant. Analyze this accommodation listing and return structured data.
-
-${url  ? 'URL: ' + url  : ''}
-${text ? 'Description: ' + text : ''}
-
-Return ONLY raw JSON (no markdown, no code fences) with these exact fields:
-{
+  const jsonSchema = `{
   "name": "short property name",
   "location": "city/area, country",
-  "totalPrice": <number, total EUR for whole stay, estimate if weekly>,
-  "pricePerNight": <number, total per night>,
+  "totalPrice": <number, total EUR for whole stay; if a nightly rate is given multiply by nights; if weekly divide by 7 then multiply by nights>,
+  "pricePerNight": <number, total price per night for the whole property>,
   "maxGuests": <number>,
   "beachDistance": "<e.g. '200m walk' or 'beachfront' or 'unknown'>",
-  "beachMinutes": <number or null>,
+  "beachMinutes": <number or null, estimated walking minutes>,
   "highlights": ["up to 4 short amenity strings"],
-  "carRentalNote": "one sentence about whether a car is needed",
-  "estimatedCarRentalPerDay": <number or null, EUR per car>,
-  "verdict": "1-2 sentence honest take for ${people} people, ${nights} nights",
+  "carRentalNote": "one sentence about whether a car is needed given the location",
+  "estimatedCarRentalPerDay": <number or null, rough EUR estimate per car per day for this region>,
+  "verdict": "1-2 sentence honest assessment for ${people} people staying ${nights} nights",
   "currency": "EUR"
 }`;
+
+  const prompt = `You are a travel planning assistant. Analyze this accommodation listing and extract structured data.
+
+URL: ${url || 'not provided'}
+Description: ${text}
+
+The group is ${people} people staying for ${nights} nights.
+
+Return ONLY raw JSON (no markdown, no code fences, no explanation) matching exactly this schema:
+${jsonSchema}
+
+If any numeric field cannot be determined from the description, make a reasonable estimate based on the location and property type and note it in the verdict. Never return null for totalPrice — always estimate.`;
 
   try {
     const res  = await fetch('https://api.anthropic.com/v1/messages', {
@@ -451,8 +468,12 @@ Return ONLY raw JSON (no markdown, no code fences) with these exact fields:
       })
     });
     const data = await res.json();
-    const raw  = data.content.map(b => b.text || '').join('');
-    const info = JSON.parse(raw.replace(/```json|```/g, '').trim());
+
+    if (data.error) throw new Error(data.error.message);
+
+    const raw  = data.content.map(b => b.text || '').join('').trim();
+    const jsonStr = raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
+    const info = JSON.parse(jsonStr);
 
     // Add metadata
     info._url     = url || null;
@@ -475,10 +496,31 @@ Return ONLY raw JSON (no markdown, no code fences) with these exact fields:
     clearForm();
   } catch(e) {
     console.error(e);
-    alert('Could not analyze. Try pasting more details in the text box.');
+    showError('Could not parse the listing. Make sure you paste the property name, price, location and amenities in the text box.');
   } finally {
     loader.classList.remove('active');
   }
+}
+
+function showUrlHint() {
+  const existing = document.getElementById('url-hint');
+  if (existing) return;
+  const hint = document.createElement('div');
+  hint.id = 'url-hint';
+  hint.style.cssText = 'background:var(--sun-lt);border:1px solid #f0d090;border-radius:var(--radius);padding:14px 16px;font-size:13px;color:#6b4200;line-height:1.6;margin-top:10px;';
+  hint.innerHTML = '<strong>URL alone is not enough</strong><br>Airbnb and Booking.com block automated access. A URL by itself cannot be fetched.<br><br><strong>Quick fix:</strong> Open the listing, copy the property name, price, and a few details, paste them in the text box below, then click Analyze.<br><br><button onclick="document.getElementById(\'url-hint\').remove();document.getElementById(\'listing-text\').focus();" style="font-size:12px;margin-top:4px;">Got it — I will paste the details</button>';
+  document.getElementById('listing-url').closest('.card').appendChild(hint);
+  document.getElementById('listing-text').focus();
+}
+
+function showError(msg) {
+  const existing = document.getElementById('analyze-error');
+  if (existing) existing.remove();
+  const el = document.createElement('div');
+  el.id = 'analyze-error';
+  el.style.cssText = 'background:var(--coral-lt);border:1px solid #e8c0bc;border-radius:var(--radius);padding:12px 14px;font-size:13px;color:var(--coral);margin-top:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;';
+  el.innerHTML = '<span>' + msg + '</span><button onclick="this.parentElement.remove()" style="font-size:18px;line-height:1;padding:0;border:none;background:none;color:var(--coral);cursor:pointer;flex-shrink:0;">x</button>';
+  document.getElementById('listing-text').closest('.card').appendChild(el);
 }
 
 // ── SESSION UI ──
