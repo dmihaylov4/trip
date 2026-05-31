@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Trip Planner — Group Accommodation Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --sand:    #f5f0e8;
+    --sand2:   #ede7d8;
+    --ink:     #1a1a14;
+    --ink2:    #3d3d30;
+    --ink3:    #7a7a60;
+    --sea:     #1b6b72;
+    --sea-lt:  #e0f0f1;
+    --sun:     #d4891a;
+    --sun-lt:  #fdf0da;
+    --coral:   #c0473a;
+    --coral-lt:#faeae8;
+    --white:   #ffffff;
+    --radius:  10px;
+    --radius-lg: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--sand);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--ink);
+    color: var(--sand);
+    padding: 3rem 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-inner { max-width: 860px; margin: 0 auto; position: relative; }
+  .hero-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sun);
+    border: 1px solid var(--sun);
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+  .hero h1 em { font-style: italic; color: var(--sun); }
+  .hero p {
+    font-size: 15px;
+    color: #9a9a80;
+    max-width: 480px;
+    line-height: 1.6;
+  }
+
+  /* ── LAYOUT ── */
+  .main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--sand2);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .card-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── CONTROLS ── */
+  .row { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; }
+  .row input, .row textarea { flex: 1; min-width: 0; }
+
+  input[type=text], input[type=url], input[type=number], textarea, select {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--sand);
+    border: 1px solid var(--sand2);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    width: 100%;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--sea); background: var(--white); }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+
+  button {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    border: 1px solid var(--sand2);
+    background: var(--white);
+    color: var(--ink);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  button:hover { border-color: var(--ink3); background: var(--sand); }
+
+  .btn-primary {
+    background: var(--ink);
+    color: var(--sand);
+    border-color: var(--ink);
+  }
+  .btn-primary:hover { background: var(--ink2); border-color: var(--ink2); color: var(--white); }
+
+  .btn-sea {
+    background: var(--sea);
+    color: var(--white);
+    border-color: var(--sea);
+  }
+  .btn-sea:hover { background: #155a60; border-color: #155a60; }
+
+  /* ── PEOPLE ROW ── */
+  .people-row { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .counter { display: flex; align-items: center; gap: 10px; }
+  .counter-btn {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 300;
+    flex-shrink: 0;
+    padding: 0;
+  }
+  .counter-val { font-size: 22px; font-weight: 500; min-width: 36px; text-align: center; }
+  .people-label { font-size: 14px; color: var(--ink3); }
+
+  /* ── METRICS ── */
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 1.25rem; }
+  .metric {
+    background: var(--sand);
+    border: 1px solid var(--sand2);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .metric-lbl { font-size: 11px; color: var(--ink3); margin-bottom: 4px; }
+  .metric-val { font-size: 22px; font-weight: 500; color: var(--ink); line-height: 1.2; }
+  .metric-sub { font-size: 11px; color: var(--ink3); margin-top: 3px; }
+
+  /* ── LISTING ITEMS ── */
+  .listing-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px;
+    background: var(--sand);
+    border: 1px solid var(--sand2);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+    align-items: flex-start;
+    animation: slideIn 0.25s ease;
+  }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .listing-main { flex: 1; min-width: 0; }
+  .listing-name { font-weight: 500; font-size: 15px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .listing-loc { font-size: 12px; color: var(--ink3); margin-bottom: 8px; }
+  .listing-verdict { font-size: 12px; color: var(--ink2); line-height: 1.5; margin-top: 6px; }
+  .listing-price { text-align: right; flex-shrink: 0; }
+  .price-main { font-size: 18px; font-weight: 600; color: var(--sea); }
+  .price-sub { font-size: 11px; color: var(--ink3); }
+  .price-total { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+
+  /* ── TAGS ── */
+  .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .tag-sea   { background: var(--sea-lt);   color: var(--sea);   border-color: #b0d8db; }
+  .tag-sun   { background: var(--sun-lt);   color: #9a5c00;      border-color: #f0d090; }
+  .tag-coral { background: var(--coral-lt); color: var(--coral); border-color: #e8c0bc; }
+  .tag-sand  { background: var(--sand2);    color: var(--ink2);  border-color: #d5cfc0; }
+
+  /* ── LOADING ── */
+  .loading { display: none; align-items: center; gap: 10px; color: var(--ink3); font-size: 13px; padding: 1rem 0; }
+  .loading.active { display: flex; }
+  .dots { display: flex; gap: 4px; }
+  .dots span {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--sea);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%,80%,100% { transform: scale(0.6); opacity:0.4; } 40% { transform: scale(1); opacity:1; } }
+
+  /* ── EMPTY ── */
+  .empty { text-align: center; padding: 2.5rem 1rem; color: var(--ink3); }
+  .empty-icon { font-size: 36px; margin-bottom: 10px; }
+  .empty p { font-size: 14px; }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 2.5rem 0 1.5rem;
+    color: var(--ink3); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .section-divider::before, .section-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--sand2);
+  }
+
+  /* ── COMMUNITY BOARD ── */
+  .board-item {
+    background: var(--white);
+    border: 1px solid var(--sand2);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    animation: slideIn 0.25s ease;
+  }
+  .board-item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .board-item-name { font-weight: 500; font-size: 15px; }
+  .board-item-price { font-size: 16px; font-weight: 600; color: var(--sea); }
+  .board-item-meta { font-size: 12px; color: var(--ink3); margin-bottom: 8px; }
+  .board-item-verdict { font-size: 13px; color: var(--ink2); line-height: 1.55; }
+  .board-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11px; color: var(--ink3); }
+
+  /* ── SHARE ── */
+  .share-bar {
+    display: flex; gap: 8px; margin-top: 1rem;
+  }
+  .share-bar input { font-size: 12px; flex: 1; }
+
+  /* ── REMOVE BTN ── */
+  .remove-btn {
+    background: none; border: none; color: var(--ink3);
+    cursor: pointer; padding: 0; font-size: 18px; line-height: 1;
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .remove-btn:hover { background: var(--coral-lt); color: var(--coral); border: none; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center; padding: 2rem;
+    font-size: 12px; color: var(--ink3);
+    border-top: 1px solid var(--sand2);
+  }
+
+  @media (max-width: 600px) {
+    .listing-item { flex-direction: column; }
+    .listing-price { text-align: left; }
+    .people-row { gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">✦ Group travel tool</div>
+    <h1>Find your perfect<br><em>group getaway.</em></h1>
+    <p>Paste any Airbnb or Booking.com listing. Get instant per-person costs, beach distance, car rental estimates, and more.</p>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- CONFIG -->
+  <div class="card">
+    <div class="card-title">⚙ Trip settings</div>
+    <div class="people-row">
+      <div>
+        <div style="font-size:12px;color:var(--ink3);margin-bottom:6px;">People</div>
+        <div class="counter">
+          <button class="counter-btn" onclick="changePeople(-1)">−</button>
+          <span class="counter-val" id="people-count">8</span>
+          <button class="counter-btn" onclick="changePeople(1)">+</button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--ink3);margin-bottom:6px;">Nights</div>
+        <div class="counter">
+          <button class="counter-btn" onclick="changeNights(-1)">−</button>
+          <span class="counter-val" id="nights-count">7</span>
+          <button class="counter-btn" onclick="changeNights(1)">+</button>
+        </div>
+      </div>
+      <div style="flex:1;min-width:160px;">
+        <div style="font-size:12px;color:var(--ink3);margin-bottom:6px;">Your name (for board)</div>
+        <input type="text" id="user-name" placeholder="e.g. Dimitar" maxlength="30" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD LISTING -->
+  <div class="card">
+    <div class="card-title">＋ Add a listing</div>
+    <div class="row" style="margin-bottom:10px;">
+      <input type="url" id="listing-url" placeholder="Paste Airbnb / Booking.com URL (optional)" />
+    </div>
+    <div style="font-size:12px;color:var(--ink3);margin-bottom:6px;">Paste the listing title, price, and details:</div>
+    <textarea id="listing-text" placeholder="e.g. 'Seaside villa in Halkidiki, sleeps 10, €1,800/week, private pool, 200m from beach, free parking, A/C in all rooms.'"></textarea>
+    <div style="display:flex;justify-content:flex-end;margin-top:10px;gap:8px;">
+      <button onclick="clearForm()">Clear</button>
+      <button class="btn-primary" onclick="analyzeAndAdd()">✦ Analyze listing</button>
+    </div>
+    <div class="loading" id="loading-indicator">
+      <div class="dots"><span></span><span></span><span></span></div>
+      Analyzing with AI...
+    </div>
+  </div>
+
+  <!-- SESSION LISTINGS + SUMMARY -->
+  <div id="session-section" style="display:none;">
+    <div class="card">
+      <div class="card-title">📋 Your session — <span id="session-count">0</span> listing(s)</div>
+      <div id="session-list"></div>
+    </div>
+
+    <div class="card" id="summary-card">
+      <div class="card-title">💰 Cost breakdown</div>
+      <div class="metrics" id="metrics-grid"></div>
+      <div id="car-note"></div>
+      <div class="share-bar">
+        <input type="text" id="share-text" readonly />
+        <button onclick="copyShare()">Copy summary</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="empty-session" class="empty">
+    <div class="empty-icon">🏖</div>
+    <p>No listings yet — add your first one above.</p>
+  </div>
+
+  <!-- COMMUNITY BOARD -->
+  <div class="section-divider">Previously checked by the group</div>
+
+  <div id="board-container">
+    <div class="empty" id="board-empty">
+      <div class="empty-icon">📌</div>
+      <p>Nothing here yet. Be the first to analyze a listing!</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Built for the trip. Powered by Claude AI. &nbsp;·&nbsp; Data saved in your browser's localStorage.
+</div>
+
+<script>
+// ── STATE ──
+let people = 8;
+let nights = 7;
+let session = []; // current session listings
+
+// ── PERSIST ──
+const BOARD_KEY = 'trip_planner_board_v2';
+
+function loadBoard() {
+  try { return JSON.parse(localStorage.getItem(BOARD_KEY)) || []; } catch { return []; }
+}
+function saveBoard(items) {
+  localStorage.setItem(BOARD_KEY, JSON.stringify(items));
+}
+
+// ── CONTROLS ──
+function changePeople(d) {
+  people = Math.max(1, people + d);
+  document.getElementById('people-count').textContent = people;
+  refreshSession();
+}
+function changeNights(d) {
+  nights = Math.max(1, nights + d);
+  document.getElementById('nights-count').textContent = nights;
+  refreshSession();
+}
+function clearForm() {
+  document.getElementById('listing-url').value = '';
+  document.getElementById('listing-text').value = '';
+}
+
+// ── ANALYZE ──
+async function analyzeAndAdd() {
+  const text = document.getElementById('listing-text').value.trim();
+  const url  = document.getElementById('listing-url').value.trim();
+  if (!text && !url) { alert('Please paste some listing info or a URL first.'); return; }
+
+  const loader = document.getElementById('loading-indicator');
+  loader.classList.add('active');
+
+  const prompt = `You are a travel planning assistant. Analyze this accommodation listing and return structured data.
+
+${url  ? 'URL: ' + url  : ''}
+${text ? 'Description: ' + text : ''}
+
+Return ONLY raw JSON (no markdown, no code fences) with these exact fields:
+{
+  "name": "short property name",
+  "location": "city/area, country",
+  "totalPrice": <number, total EUR for whole stay, estimate if weekly>,
+  "pricePerNight": <number, total per night>,
+  "maxGuests": <number>,
+  "beachDistance": "<e.g. '200m walk' or 'beachfront' or 'unknown'>",
+  "beachMinutes": <number or null>,
+  "highlights": ["up to 4 short amenity strings"],
+  "carRentalNote": "one sentence about whether a car is needed",
+  "estimatedCarRentalPerDay": <number or null, EUR per car>,
+  "verdict": "1-2 sentence honest take for ${people} people, ${nights} nights",
+  "currency": "EUR"
+}`;
+
+  try {
+    const res  = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const raw  = data.content.map(b => b.text || '').join('');
+    const info = JSON.parse(raw.replace(/```json|```/g, '').trim());
+
+    // Add metadata
+    info._url     = url || null;
+    info._people  = people;
+    info._nights  = nights;
+    info._ts      = Date.now();
+    info._addedBy = document.getElementById('user-name').value.trim() || 'Someone';
+
+    // Add to session
+    session.push(info);
+
+    // Add to persistent board
+    const board = loadBoard();
+    board.unshift(info); // newest first
+    if (board.length > 50) board.length = 50; // cap
+    saveBoard(board);
+
+    refreshSession();
+    renderBoard();
+    clearForm();
+  } catch(e) {
+    console.error(e);
+    alert('Could not analyze. Try pasting more details in the text box.');
+  } finally {
+    loader.classList.remove('active');
+  }
+}
+
+// ── SESSION UI ──
+function refreshSession() {
+  const sec   = document.getElementById('session-section');
+  const empty = document.getElementById('empty-session');
+
+  if (!session.length) {
+    sec.style.display   = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+  sec.style.display   = 'block';
+  empty.style.display = 'none';
+
+  document.getElementById('session-count').textContent = session.length;
+  renderSessionList();
+  renderMetrics();
+}
+
+function renderSessionList() {
+  const list = document.getElementById('session-list');
+  if (!session.length) { list.innerHTML = ''; return; }
+
+  list.innerHTML = session.map((l, i) => {
+    const pp   = l.totalPrice ? Math.round(l.totalPrice / people) : null;
+    const ppn  = l.totalPrice ? Math.round(l.totalPrice / people / nights) : null;
+    const btag = beachTag(l);
+    const htags = (l.highlights || []).slice(0,3).map(h => `<span class="tag tag-sand">${h}</span>`).join('');
+    return `
+    <div class="listing-item">
+      <div class="listing-main">
+        <div class="listing-name">${esc(l.name)}</div>
+        <div class="listing-loc">📍 ${esc(l.location)}</div>
+        <div class="tags">${btag}${htags}</div>
+        ${l.verdict ? `<div class="listing-verdict">${esc(l.verdict)}</div>` : ''}
+      </div>
+      <div class="listing-price">
+        ${pp ? `<div class="price-main">€${pp.toLocaleString()}<small>/person</small></div>` : '<div class="price-main">—</div>'}
+        ${ppn ? `<div class="price-sub">€${ppn}/person/night</div>` : ''}
+        ${l.totalPrice ? `<div class="price-total">€${l.totalPrice.toLocaleString()} total</div>` : ''}
+        <button class="remove-btn" onclick="removeSession(${i})" title="Remove">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function removeSession(i) {
+  session.splice(i, 1);
+  refreshSession();
+}
+
+function renderMetrics() {
+  const prices = session.filter(l => l.totalPrice).map(l => l.totalPrice);
+  if (!prices.length) { document.getElementById('metrics-grid').innerHTML = ''; return; }
+
+  const minP = Math.min(...prices);
+  const maxP = Math.max(...prices);
+  const carsNeeded = Math.ceil(people / 5);
+  const carEstimates = session.filter(l => l.estimatedCarRentalPerDay).map(l => l.estimatedCarRentalPerDay);
+  const avgCar = carEstimates.length ? Math.round(carEstimates.reduce((a,b)=>a+b,0)/carEstimates.length) : null;
+  const carTotal = avgCar ? avgCar * carsNeeded * nights : null;
+
+  const metrics = [];
+  if (session.length === 1) {
+    metrics.push({ lbl: 'Per person', val: `€${Math.round(minP/people).toLocaleString()}`, sub: `for ${nights} nights` });
+    metrics.push({ lbl: 'Per person/night', val: `€${Math.round(minP/people/nights)}`, sub: `${nights} nights` });
+  } else {
+    metrics.push({ lbl: 'Cheapest/person', val: `€${Math.round(minP/people).toLocaleString()}`, sub: '' });
+    metrics.push({ lbl: 'Priciest/person', val: `€${Math.round(maxP/people).toLocaleString()}`, sub: '' });
+  }
+  metrics.push({ lbl: 'Group size', val: `${people} people`, sub: `${nights} nights` });
+  if (carTotal) {
+    metrics.push({ lbl: 'Car rental/person', val: `€${Math.round(carTotal/people)}`, sub: `${carsNeeded} car${carsNeeded>1?'s':''} × ${nights}n` });
+    metrics.push({ lbl: 'All-in/person', val: `€${Math.round((minP + carTotal)/people).toLocaleString()}`, sub: 'accom + car (cheapest)' });
+  }
+
+  document.getElementById('metrics-grid').innerHTML = metrics.map(m => `
+    <div class="metric">
+      <div class="metric-lbl">${m.lbl}</div>
+      <div class="metric-val">${m.val}</div>
+      ${m.sub ? `<div class="metric-sub">${m.sub}</div>` : ''}
+    </div>`).join('');
+
+  // car note
+  const carNotes = session.filter(l => l.carRentalNote).map(l => l.carRentalNote);
+  const carDiv = document.getElementById('car-note');
+  if (carNotes.length) {
+    carDiv.innerHTML = `<div style="background:var(--sea-lt);border:1px solid #b0d8db;border-radius:var(--radius);padding:12px 14px;font-size:13px;color:var(--sea);margin-bottom:12px;">
+      🚗 ${carNotes[0]}</div>`;
+  } else { carDiv.innerHTML = ''; }
+
+  // share text
+  const lines = session.map(l => {
+    const pp = l.totalPrice ? `€${Math.round(l.totalPrice/people)}/pp` : '';
+    return `• ${l.name} (${l.location}) — ${pp} · Beach: ${l.beachDistance || '?'}`;
+  }).join('\n');
+  document.getElementById('share-text').value =
+    `🏖 Trip options for ${people} people, ${nights} nights:\n${lines}`;
+}
+
+function copyShare() {
+  const t = document.getElementById('share-text');
+  navigator.clipboard.writeText(t.value).then(() => {
+    const btn = event.target;
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = 'Copy summary', 2000);
+  });
+}
+
+// ── COMMUNITY BOARD ──
+function renderBoard() {
+  const board     = loadBoard();
+  const container = document.getElementById('board-container');
+  const empty     = document.getElementById('board-empty');
+
+  if (!board.length) {
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const html = board.map((l, i) => {
+    const pp  = l.totalPrice && l._people ? Math.round(l.totalPrice / l._people) : null;
+    const when = l._ts ? timeAgo(l._ts) : '';
+    const who  = l._addedBy || 'Someone';
+    const btag = beachTag(l);
+    const htags = (l.highlights || []).slice(0,3).map(h => `<span class="tag tag-sand">${h}</span>`).join('');
+    return `
+    <div class="board-item">
+      <div class="board-item-header">
+        <div>
+          <div class="board-item-name">${esc(l.name)}</div>
+          <div class="board-item-meta">📍 ${esc(l.location)} &nbsp;·&nbsp; ${l._people || '?'} people, ${l._nights || '?'} nights</div>
+        </div>
+        ${pp ? `<div class="board-item-price">€${pp.toLocaleString()}<small style="font-size:11px;font-weight:400;color:var(--ink3)">/person</small></div>` : ''}
+      </div>
+      <div class="tags" style="margin-bottom:8px;">${btag}${htags}</div>
+      ${l.verdict ? `<div class="board-item-verdict">${esc(l.verdict)}</div>` : ''}
+      <div class="board-item-footer">
+        <span>Added by <strong>${esc(who)}</strong> ${when}</span>
+        ${l.totalPrice ? `<span>€${l.totalPrice.toLocaleString()} total</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Replace all board items (not the empty placeholder)
+  const existing = container.querySelectorAll('.board-item');
+  existing.forEach(e => e.remove());
+  container.insertAdjacentHTML('afterbegin', html);
+}
+
+// ── HELPERS ──
+function beachTag(l) {
+  if (!l.beachDistance || l.beachDistance === 'unknown') return `<span class="tag tag-coral">Beach dist. unknown</span>`;
+  const m = l.beachMinutes;
+  if (m === null || m === undefined) return `<span class="tag tag-sand">🏖 ${esc(l.beachDistance)}</span>`;
+  if (m <= 5)  return `<span class="tag tag-sea">🏖 ${esc(l.beachDistance)}</span>`;
+  if (m <= 15) return `<span class="tag tag-sun">🚶 ${esc(l.beachDistance)}</span>`;
+  return `<span class="tag tag-coral">🚗 ${esc(l.beachDistance)}</span>`;
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  const min  = Math.floor(diff / 60000);
+  if (min < 2)  return 'just now';
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}h ago`;
+  return `${Math.floor(hr/24)}d ago`;
+}
+
+// ── INIT ──
+refreshSession();
+renderBoard();
+</script>
+</body>
+</html>
