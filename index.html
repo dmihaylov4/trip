@@ -69,6 +69,8 @@
   .notice { font-size: 13px; padding: 10px 12px; border-radius: var(--radius); margin-top: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; line-height: 1.5; }
   .notice.warn { background: #fffbe6; border: 1px solid #e8d870; color: #5a4a00; }
   .notice.err  { background: var(--red-bg); border: 1px solid #e8bebb; color: var(--red); }
+  .notice.ok   { background: var(--green-bg); border: 1px solid #a8d8b8; color: var(--green); }
+  .notice.info { background: #f0f4ff; border: 1px solid #c0ccee; color: #2a3a7a; }
   .notice-close { background: none; border: none; padding: 0; font-size: 16px; line-height: 1; cursor: pointer; color: inherit; flex-shrink: 0; }
   .notice-close:hover { background: none; }
 
@@ -133,7 +135,7 @@
 <body>
 <div class="page">
 
-  <h1>Salam</h1>
+  <h1>Trip Planner</h1>
 
   <!-- FORM (add + edit) -->
   <div class="section" id="form-section">
@@ -429,12 +431,15 @@ async function saveListing() {
 
     // Single PATCH that saves everything — payload fields + image_urls together
     const finalPayload = currentEditingId ? { ...payload, image_urls: allUrls } : { image_urls: allUrls };
+    notice(`Saving to id=${listingId}, editing=${!!currentEditingId}, fields: ${JSON.stringify(Object.keys(finalPayload))}`, 'info');
     const saveRes = await fetch(`${SUPABASE_URL}/rest/v1/listings?id=eq.${listingId}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=minimal' },
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=representation' },
       body: JSON.stringify(finalPayload)
     });
-    if (!saveRes.ok) throw new Error(await saveRes.text());
+    const saveText = await saveRes.text();
+    notice(`PATCH status: ${saveRes.status} — ${saveText.slice(0, 200)}`, saveRes.ok ? 'ok' : 'err');
+    if (!saveRes.ok) throw new Error(saveText);
 
     clearForm();
     setAddMode();
