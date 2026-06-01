@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Salam</title>
+<title>Salam 2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -85,50 +85,64 @@
   .listing-card:hover { border-color: #bbb; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
   .card-clickable { cursor: pointer; }
 
-  .carousel { position: relative; background: #e8e4dc; height: 200px; overflow: hidden; }
+  .carousel { position: relative; background: #e8e4dc; height: 220px; overflow: hidden; }
   .carousel-track { display: flex; height: 100%; transition: transform 0.3s ease; }
   .carousel-track img { flex-shrink: 0; width: 100%; height: 100%; object-fit: cover; }
-  .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.45); color: #fff; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; z-index: 2; opacity: 0; transition: opacity 0.15s; }
-  .carousel:hover .carousel-btn { opacity: 1; }
-  .carousel-btn.prev { left: 8px; }
-  .carousel-btn.next { right: 8px; }
-  .carousel-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
+  .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.45); color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; z-index: 2; opacity: 0; transition: opacity 0.15s; }
+  .carousel:hover .carousel-btn, .carousel:focus-within .carousel-btn { opacity: 1; }
+  .carousel-btn.prev { left: 10px; }
+  .carousel-btn.next { right: 10px; }
+  .carousel-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
   .carousel-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); transition: background 0.15s; }
   .carousel-dot.active { background: #fff; }
-  .no-photos { height: 200px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--muted); background: var(--bg); }
+  .no-photos { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--muted); background: var(--bg); }
 
-  .card-body { padding: 14px 16px; }
-  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
-  .card-name { font-weight: 500; font-size: 15px; line-height: 1.3; }
-  .card-price { text-align: right; flex-shrink: 0; }
-  .card-price-main { font-weight: 500; font-size: 15px; }
-  .card-price-sub { font-size: 11px; color: var(--muted); }
-  .card-loc { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
-  .tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: var(--bg); border: 1px solid var(--border); color: var(--muted); }
-  .card-notes { font-size: 12px; color: var(--muted); font-style: italic; margin-bottom: 6px; line-height: 1.5; }
-  .card-footer { font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
-  .card-actions { display: flex; gap: 10px; align-items: center; }
-  .card-edit-btn { font-size: 11px; color: var(--muted); background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; }
-  .card-edit-btn:hover { color: var(--ink); border: none; background: none; }
-
-  .empty-board { font-size: 13px; color: var(--muted); padding: 1.5rem 0; }
-
-  /* votes */
-  .vote-bar { display: flex; align-items: center; gap: 6px; }
-  .vote-btn { background: none; border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; font-size: 12px; color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.12s; }
+  /* card hero bar — price + votes prominent at top */
+  .card-hero { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px 0; gap: 10px; }
+  .card-hero-price { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+  .card-price-main { font-size: 22px; font-weight: 600; color: var(--ink); line-height: 1; }
+  .card-price-label { font-size: 12px; color: var(--muted); }
+  .card-price-subs { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .card-hero-votes { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .vote-btn { background: none; border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
   .vote-btn:hover { border-color: var(--ink); color: var(--ink); }
   .vote-btn.voted-up   { background: var(--green-bg); border-color: #a8d8b8; color: var(--green); }
   .vote-btn.voted-down { background: var(--red-bg);   border-color: #e8bebb; color: var(--red); }
-  .vote-score { font-size: 13px; font-weight: 500; min-width: 20px; text-align: center; }
+  .vote-score { font-size: 16px; font-weight: 600; min-width: 24px; text-align: center; }
   .vote-score.positive { color: var(--green); }
   .vote-score.negative { color: var(--red); }
+
+  .card-body { padding: 8px 16px 14px; }
+  .card-name { font-weight: 500; font-size: 15px; line-height: 1.3; margin-bottom: 2px; }
+  .card-dates { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+  .card-loc { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: var(--bg); border: 1px solid var(--border); color: var(--muted); }
+  .card-notes { font-size: 12px; color: var(--muted); font-style: italic; margin-bottom: 8px; line-height: 1.5; }
+  .card-footer { font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid var(--border); }
+  .card-actions { display: flex; gap: 12px; align-items: center; }
+  .card-edit-btn { font-size: 11px; color: var(--muted); background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; }
+  .card-edit-btn:hover { color: var(--ink); border: none; background: none; }
+  .card-link { font-size: 11px; color: var(--muted); cursor: pointer; text-decoration: underline; }
+
+  .empty-board { font-size: 13px; color: var(--muted); padding: 1.5rem 0; }
   .paste-zone { position: relative; }
 
-  @media (max-width: 520px) {
+  /* ── MOBILE ── */
+  @media (max-width: 600px) {
+    .page { padding: 1.25rem 1rem 3rem; }
+    h1 { font-size: 18px; margin-bottom: 1.25rem; }
+    .form-card { padding: 1rem; }
     .field-row { flex-direction: column; }
-    .carousel { height: 160px; }
-    .no-photos { height: 160px; }
+    .field-row .field { min-width: 0; width: 100%; }
+    .carousel { height: 200px; }
+    .card-hero { padding: 10px 12px 0; }
+    .card-price-main { font-size: 20px; }
+    .card-body { padding: 8px 12px 12px; }
+    .card-footer { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .card-actions { width: 100%; justify-content: flex-end; }
+    .btn-row { flex-wrap: wrap; }
+    .btn-row button { flex: 1; }
   }
 </style>
 </head>
@@ -146,7 +160,7 @@
       </div>
 
       <div class="field">
-        <label>Booking URL </label>
+        <label>Booking URL <span style="font-weight:400">(tap the card to open it)</span></label>
         <input type="url" id="listing-url" placeholder="https://www.booking.com/..." oninput="onUrlPaste()" />
       </div>
 
@@ -515,33 +529,34 @@ function renderBoard(rows) {
     const dataAttr = `data-id="${esc(l.id)}"`;
 
     const myVote = (getVotes())[l.id] || 0;
+    const scoreClass = (l.votes||0) > 0 ? 'positive' : (l.votes||0) < 0 ? 'negative' : '';
     return `
     <div class="listing-card" ${dataAttr}>
       <div onclick="openListing(event,'${esc(l.url||'')}')" class="${l.url ? 'card-clickable' : ''}">
         ${carouselHtml}
-        <div class="card-body">
-          <div class="card-top">
-            <div class="card-name">${esc(l.name)}</div>
-            <div class="card-price">
-              ${pp ? `<div class="card-price-main">&euro;${pp.toLocaleString()}<span style="font-size:11px;font-weight:400;color:var(--muted)">/person</span></div>` : ''}
-              ${ppn ? `<div class="card-price-sub">&euro;${ppn}/night</div>` : ''}
-              ${l.price_total ? `<div class="card-price-sub">&euro;${Math.round(l.price_total).toLocaleString()} total</div>` : ''}
-            </div>
-          </div>
-          ${l.location ? `<div class="card-loc">${esc(l.location)}</div>` : ''}
-          ${tags.length ? `<div class="card-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
-          ${l.notes ? `<div class="card-notes">${esc(l.notes)}</div>` : ''}
-          <div class="card-footer">
-            <span>${formatDates(l.checkin, l.checkout)}${timeAgo(l.created_at)}</span>
-            <div class="card-actions">
-              <div class="vote-bar">
-                <button class="vote-btn ${myVote===1?'voted-up':''}" onclick="vote(event,'${l.id}',1)">+ Up</button>
-                <span class="vote-score ${(l.votes||0)>0?'positive':(l.votes||0)<0?'negative':''}">${l.votes||0}</span>
-                <button class="vote-btn ${myVote===-1?'voted-down':''}" onclick="vote(event,'${l.id}',-1)">- Down</button>
-              </div>
-              <button class="card-edit-btn" onclick="startEdit(event,'${esc(l.id)}')">Edit</button>
-              ${l.url ? `<span class="card-link" style="cursor:pointer;" onclick="openListing(event,'${esc(l.url)}')">View listing &rarr;</span>` : ''}
-            </div>
+      </div>
+      <div class="card-hero">
+        <div>
+          ${pp ? `<div style="display:flex;align-items:baseline;gap:5px;"><span class="card-price-main">&euro;${pp.toLocaleString()}</span><span class="card-price-label">/person</span></div>` : '<div class="card-price-main">—</div>'}
+          <div class="card-price-subs">${ppn ? `&euro;${ppn}/night &middot; ` : ''}${l.price_total ? `&euro;${Math.round(l.price_total).toLocaleString()} total` : ''}</div>
+        </div>
+        <div class="card-hero-votes">
+          <button class="vote-btn ${myVote===1?'voted-up':''}" onclick="vote(event,'${l.id}',1)">Like</button>
+          <span class="vote-score ${scoreClass}">${l.votes||0}</span>
+          <button class="vote-btn ${myVote===-1?'voted-down':''}" onclick="vote(event,'${l.id}',-1)">Dislike</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${esc(l.name)}</div>
+        ${(l.checkin || l.checkout) ? `<div class="card-dates">${formatDates(l.checkin, l.checkout).replace(' &middot; ','')}</div>` : ''}
+        ${l.location ? `<div class="card-loc">${esc(l.location)}</div>` : ''}
+        ${tags.length ? `<div class="card-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+        ${l.notes ? `<div class="card-notes">${esc(l.notes)}</div>` : ''}
+        <div class="card-footer">
+          <span>${timeAgo(l.created_at)}</span>
+          <div class="card-actions">
+            <button class="card-edit-btn" onclick="startEdit(event,'${esc(l.id)}')">Edit</button>
+            ${l.url ? `<span class="card-link" onclick="openListing(event,'${esc(l.url)}')">View listing &rarr;</span>` : ''}
           </div>
         </div>
       </div>
