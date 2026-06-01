@@ -364,8 +364,13 @@ async function uploadImages(listingId) {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': file.type, 'x-upsert': 'true' },
       body: file
     });
-    if (!res.ok) { console.warn('Upload failed', await res.text()); continue; }
-    urls.push(`${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`);
+    const resText = await res.text();
+    console.log('Upload status:', res.status, res.statusText);
+    console.log('Upload response:', resText);
+    if (!res.ok) { console.error('Upload failed:', res.status, resText); notice('Photo upload failed: ' + res.status + ' ' + resText, 'err'); continue; }
+    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`;
+    console.log('Uploaded OK, URL:', publicUrl);
+    urls.push(publicUrl);
   }
   document.getElementById('upload-progress').textContent = '';
   return urls;
