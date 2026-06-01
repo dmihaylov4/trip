@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Salam</title>
+<title>Trip Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -133,7 +133,7 @@
 <body>
 <div class="page">
 
-  <h1>Salam</h1>
+  <h1>Trip Planner</h1>
 
   <!-- FORM (add + edit) -->
   <div class="section" id="form-section">
@@ -405,17 +405,13 @@ async function saveListing() {
 
     let listingId;
 
+    // Upload new images first, merge with kept existing ones
+    let listingId;
+
     if (editingId) {
-      // PATCH existing
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/listings?id=eq.${editingId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=minimal' },
-        body: JSON.stringify(payload)
-      });
-      if (!res.ok) throw new Error(await res.text());
       listingId = editingId;
     } else {
-      // POST new
+      // POST new listing to get ID
       payload.image_urls = [];
       const res = await fetch(`${SUPABASE_URL}/rest/v1/listings`, {
         method: 'POST',
@@ -427,30 +423,21 @@ async function saveListing() {
       listingId = row.id;
     }
 
-    // Upload new images and merge with kept existing ones
+    // Upload any new photos, then combine with kept existing URLs
     const newUrls = pendingFiles.length > 0 ? await uploadImages(listingId) : [];
     const allUrls = [...existingUrls, ...newUrls];
-    console.log('Saving image_urls:', allUrls, 'to listing:', listingId);
 
-    const imgPatchRes = await fetch(`${SUPABASE_URL}/rest/v1/listings?id=eq.${listingId}`, {
+    // Single PATCH that saves everything — payload fields + image_urls together
+    const finalPayload = editingId ? { ...payload, image_urls: allUrls } : { image_urls: allUrls };
+    const saveRes = await fetch(`${SUPABASE_URL}/rest/v1/listings?id=eq.${listingId}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=representation' },
-      body: JSON.stringify({ image_urls: allUrls })
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=minimal' },
+      body: JSON.stringify(finalPayload)
     });
-    if (!imgPatchRes.ok) {
-      const t = await imgPatchRes.text();
-      notice('Could not save image URLs: ' + imgPatchRes.status + ' ' + t, 'err');
-    }
+    if (!saveRes.ok) throw new Error(await saveRes.text());
 
     clearForm();
     setAddMode();
-    // Re-fetch this specific listing to get guaranteed fresh data, then reload full board
-    const freshRes = await fetch(`${SUPABASE_URL}/rest/v1/listings?id=eq.${listingId}`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Cache-Control': 'no-cache' }
-    });
-    console.log('Fresh fetch status:', freshRes.status);
-    const freshRows = await freshRes.json();
-    console.log('Fresh row image_urls:', freshRows[0]?.image_urls);
     await loadBoard();
   } catch(e) {
     console.error(e);
@@ -482,7 +469,7 @@ async function deleteListing() {
 async function loadBoard() {
   try {
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/listings?order=created_at.desc&limit=100`,
+      `${SUPABASE_URL}/rest/v1/listings?order=created_at.desc&limit=100&_=${Date.now()}`,
       { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
     );
     if (!res.ok) throw new Error(await res.text());
