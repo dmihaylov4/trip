@@ -385,13 +385,15 @@ async function saveListing() {
   const btn = document.getElementById('save-btn');
   btn.disabled = true;
 
+  const currentEditingId = editingId; // capture before any async clears it
+
   try {
     const price   = document.getElementById('f-price').value.trim();
     const payload = {
       url:            document.getElementById('listing-url').value.trim() || null,
       name,
       location:       document.getElementById('f-location').value.trim() || null,
-      price_total:    price ? parseFloat(price) : null,
+      price_total:    price ? parseFloat(price.replace(/,/g, '')) : null,
       price_currency: 'EUR',
       beach_distance: document.getElementById('f-beach').value.trim() || null,
       checkin:        document.getElementById('f-checkin').value || null,
@@ -406,8 +408,8 @@ async function saveListing() {
     // Upload new images first, merge with kept existing ones
     let listingId;
 
-    if (editingId) {
-      listingId = editingId;
+    if (currentEditingId) {
+      listingId = currentEditingId;
     } else {
       // POST new listing to get ID
       payload.image_urls = [];
@@ -426,7 +428,7 @@ async function saveListing() {
     const allUrls = [...existingUrls, ...newUrls];
 
     // Single PATCH that saves everything — payload fields + image_urls together
-    const finalPayload = editingId ? { ...payload, image_urls: allUrls } : { image_urls: allUrls };
+    const finalPayload = currentEditingId ? { ...payload, image_urls: allUrls } : { image_urls: allUrls };
     const saveRes = await fetch(`${SUPABASE_URL}/rest/v1/listings?id=eq.${listingId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=minimal' },
