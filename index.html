@@ -72,11 +72,6 @@
   .btn-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; align-items: center; }
   .upload-progress { font-size: 12px; color: var(--muted); }
 
-  .counter-row { display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
-  .counter { display: flex; align-items: center; gap: 10px; }
-  .counter label { font-size: 13px; color: var(--muted); min-width: 44px; }
-  .counter-btn { width: 30px; height: 30px; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 300; flex-shrink: 0; }
-  .counter-val { font-size: 18px; font-weight: 500; min-width: 28px; text-align: center; }
 
   .notice { font-size: 13px; padding: 10px 12px; border-radius: var(--radius); margin-top: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; line-height: 1.5; }
   .notice.warn { background: #fffbe6; border: 1px solid #e8d870; color: #5a4a00; }
@@ -140,6 +135,9 @@
 
   .empty-board { font-size: 13px; color: var(--muted); padding: 1.5rem 0; }
 
+  .paste-zone { position: relative; }
+  .paste-zone.drag-over .file-label { border-color: var(--ink); background: #fff; color: var(--ink); }
+
   @media (max-width: 520px) {
     .field-row { flex-direction: column; }
     .carousel { height: 160px; }
@@ -152,11 +150,8 @@
 
   <h1>Trip Planner</h1>
 
-
-
   <!-- ADD LISTING -->
   <div class="section">
-    <div class="section-label">Add a listing</div>
     <div class="form-card">
 
       <div class="field">
@@ -184,10 +179,6 @@
           <label>Beach distance</label>
           <input type="text" id="f-beach" placeholder="e.g. 200m walk" />
         </div>
-        <div class="field">
-          <label>Max guests</label>
-          <input type="number" id="f-guests" placeholder="e.g. 10" min="1" />
-        </div>
       </div>
 
       <div class="field">
@@ -202,11 +193,13 @@
 
       <div class="field">
         <label>Screenshots</label>
-        <label class="file-label" for="f-images">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          Choose photos (up to 8)
-        </label>
-        <input type="file" id="f-images" accept="image/*" multiple onchange="previewImages(event)" />
+        <div id="paste-zone" class="paste-zone" tabindex="0">
+          <label class="file-label" for="f-images">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Choose photos or paste screenshot (Ctrl+V / Cmd+V)
+          </label>
+          <input type="file" id="f-images" accept="image/*" multiple onchange="previewImages(event)" />
+        </div>
         <div class="file-previews" id="file-previews"></div>
       </div>
 
@@ -240,12 +233,10 @@ const SUPABASE_URL = 'https://ntobxxiplcamwbfeirno.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50b2J4eGlwbGNhbXdiZmVpcm5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMTA3MTcsImV4cCI6MjA5NTg4NjcxN30.PvKU4CETydg-c2sS53tYvBNrK8rGmohr0c4EJRjeM0c';
 const BUCKET     = 'listing-images';
 
-let people = 8, nights = 7;
+const people = 8, nights = 7;
 let pendingFiles = []; // { file, objectUrl }
 
 // ── CONTROLS ──
-function changePeople(d) { people = Math.max(1, people+d); document.getElementById('people-val').textContent = people; }
-function changeNights(d) { nights = Math.max(1, nights+d); document.getElementById('nights-val').textContent = nights; }
 
 function onUrlPaste() {
   const url = document.getElementById('listing-url').value.trim();
@@ -263,10 +254,7 @@ function onUrlPaste() {
 
 // ── IMAGE PREVIEWS ──
 function previewImages(e) {
-  const files = Array.from(e.target.files).slice(0, 8 - pendingFiles.length);
-  files.forEach(f => pendingFiles.push({ file: f, objectUrl: URL.createObjectURL(f) }));
-  renderPreviews();
-  // reset input so same file can be re-added after removal
+  addImageFiles(e.target.files);
   e.target.value = '';
 }
 
@@ -285,8 +273,24 @@ function removePreview(i) {
   renderPreviews();
 }
 
+// ── PASTE & DROP IMAGES ──
+function addImageFiles(files) {
+  const allowed = Array.from(files).filter(f => f.type.startsWith('image/')).slice(0, 8 - pendingFiles.length);
+  allowed.forEach(f => pendingFiles.push({ file: f, objectUrl: URL.createObjectURL(f) }));
+  renderPreviews();
+}
+
+document.addEventListener('paste', function(e) {
+  const items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  const imageItems = Array.from(items).filter(i => i.type.startsWith('image/'));
+  if (!imageItems.length) return;
+  const files = imageItems.map(i => i.getAsFile()).filter(Boolean);
+  addImageFiles(files);
+});
+
 function clearForm() {
-  ['listing-url','f-name','f-location','f-price','f-beach','f-guests','f-highlights','f-notes']
+  ['listing-url','f-name','f-location','f-price','f-beach','f-highlights','f-notes']
     .forEach(id => document.getElementById(id).value = '');
   pendingFiles.forEach(p => URL.revokeObjectURL(p.objectUrl));
   pendingFiles = [];
@@ -350,7 +354,7 @@ async function addListing() {
       beach_distance: document.getElementById('f-beach').value.trim() || null,
       highlights:     document.getElementById('f-highlights').value.trim() || null,
       notes:          document.getElementById('f-notes').value.trim() || null,
-      added_by:       document.getElementById('user-name').value.trim() || 'Unknown',
+      added_by:       'Anonymous',
       people,
       nights,
       image_urls:     [],
