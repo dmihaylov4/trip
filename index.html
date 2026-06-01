@@ -28,15 +28,31 @@
   .section { margin-bottom: 1.25rem; }
   .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
 
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+  .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
 
-  input[type=text], input[type=url], input[type=number], textarea, select {
+  input[type=text], input[type=url], input[type=number], textarea {
     font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
     background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
     padding: 9px 12px; width: 100%; outline: none; transition: border-color 0.15s;
   }
   input:focus, textarea:focus { border-color: var(--ink); background: #fff; }
   textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
+
+  /* file input */
+  .file-label {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--muted); cursor: pointer;
+    border: 1px dashed var(--border); border-radius: var(--radius);
+    padding: 8px 14px; background: var(--bg); transition: border-color 0.15s;
+    width: 100%;
+  }
+  .file-label:hover { border-color: var(--ink); color: var(--ink); }
+  input[type=file] { display: none; }
+  .file-previews { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .file-thumb { position: relative; width: 64px; height: 64px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); flex-shrink: 0; }
+  .file-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .file-thumb-remove { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,0.6); color: #fff; border: none; font-size: 11px; line-height: 1; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; }
+  .file-thumb-remove:hover { background: var(--red); }
 
   button {
     font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
@@ -52,8 +68,9 @@
   .field { margin-bottom: 10px; }
   .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
   .field-row { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
-  .field-row .field { flex: 1; min-width: 140px; margin-bottom: 0; }
-  .btn-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+  .field-row .field { flex: 1; min-width: 130px; margin-bottom: 0; }
+  .btn-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; align-items: center; }
+  .upload-progress { font-size: 12px; color: var(--muted); }
 
   .counter-row { display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
   .counter { display: flex; align-items: center; gap: 10px; }
@@ -62,51 +79,71 @@
   .counter-val { font-size: 18px; font-weight: 500; min-width: 28px; text-align: center; }
 
   .notice { font-size: 13px; padding: 10px 12px; border-radius: var(--radius); margin-top: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; line-height: 1.5; }
-  .notice.warn  { background: #fffbe6; border: 1px solid #e8d870; color: #5a4a00; }
-  .notice.err   { background: var(--red-bg); border: 1px solid #e8bebb; color: var(--red); }
-  .notice.ok    { background: var(--green-bg); border: 1px solid #a8d8b8; color: var(--green); }
-  .notice.info  { background: #f0f4ff; border: 1px solid #c0ccee; color: #2a3a7a; }
+  .notice.warn { background: #fffbe6; border: 1px solid #e8d870; color: #5a4a00; }
+  .notice.err  { background: var(--red-bg); border: 1px solid #e8bebb; color: var(--red); }
   .notice-close { background: none; border: none; padding: 0; font-size: 16px; line-height: 1; cursor: pointer; color: inherit; flex-shrink: 0; }
   .notice-close:hover { background: none; }
 
-  .fetch-status { font-size: 12px; color: var(--muted); margin-top: 6px; min-height: 18px; }
-  .fetch-status.ok  { color: var(--green); }
-  .fetch-status.err { color: var(--red); }
-
-  .loader { display: none; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; margin-top: 10px; }
-  .loader.active { display: flex; }
-  .dots span { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--muted); margin-right: 3px; animation: blink 1.2s infinite; }
-  .dots span:nth-child(2) { animation-delay: 0.2s; }
-  .dots span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes blink { 0%,80%,100% { opacity:0.2; } 40% { opacity:1; } }
-
   .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
 
-  .board-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
-  .board-count { font-size: 12px; color: var(--muted); }
+  .board-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+  .board-count { font-size: 12px; color: var(--muted); margin-top: 2px; }
   .text-btn { font-size: 12px; color: var(--muted); background: none; border: none; padding: 0; cursor: pointer; }
   .text-btn:hover { color: var(--red); border: none; background: none; }
 
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead th { text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 0 12px 8px 0; border-bottom: 1px solid var(--border); }
-  thead th:last-child { text-align: right; padding-right: 0; }
-  tbody tr { border-bottom: 1px solid var(--border); }
-  tbody tr:last-child { border-bottom: none; }
-  tbody td { padding: 12px 12px 12px 0; vertical-align: top; line-height: 1.5; }
-  tbody td:last-child { text-align: right; padding-right: 0; }
-  .td-name { font-weight: 500; }
-  .td-loc  { font-size: 12px; color: var(--muted); }
-  .td-hi   { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .td-link { font-size: 12px; margin-top: 3px; }
-  .td-link a { color: var(--muted); text-decoration: underline; }
-  .td-who  { font-size: 11px; color: var(--muted); margin-top: 4px; }
-  .td-price { font-weight: 500; font-size: 15px; }
-  .td-psub  { font-size: 11px; color: var(--muted); }
+  /* ── LISTING CARDS ── */
+  .listing-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+  .listing-card:hover { border-color: #bbb; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+  .listing-card[data-url=""] { cursor: default; }
+
+  /* carousel */
+  .carousel { position: relative; background: #e8e4dc; height: 200px; overflow: hidden; }
+  .carousel-track { display: flex; height: 100%; transition: transform 0.3s ease; }
+  .carousel-track img { flex-shrink: 0; width: 100%; height: 100%; object-fit: cover; }
+  .carousel-btn {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(0,0,0,0.45); color: #fff; border: none;
+    width: 32px; height: 32px; border-radius: 50%; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; padding: 0; z-index: 2;
+    opacity: 0; transition: opacity 0.15s;
+  }
+  .carousel:hover .carousel-btn { opacity: 1; }
+  .carousel-btn.prev { left: 8px; }
+  .carousel-btn.next { right: 8px; }
+  .carousel-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
+  .carousel-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); transition: background 0.15s; }
+  .carousel-dot.active { background: #fff; }
+  .no-photos { height: 200px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--muted); background: var(--bg); }
+
+  /* card body */
+  .card-body { padding: 14px 16px; }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
+  .card-name { font-weight: 500; font-size: 15px; line-height: 1.3; }
+  .card-price { text-align: right; flex-shrink: 0; }
+  .card-price-main { font-weight: 500; font-size: 15px; }
+  .card-price-sub { font-size: 11px; color: var(--muted); }
+  .card-loc { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: var(--bg); border: 1px solid var(--border); color: var(--muted); }
+  .card-notes { font-size: 12px; color: var(--muted); font-style: italic; margin-bottom: 6px; line-height: 1.5; }
+  .card-footer { font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
+  .card-link { font-size: 11px; color: var(--muted); text-decoration: underline; }
+
   .empty-board { font-size: 13px; color: var(--muted); padding: 1.5rem 0; }
 
   @media (max-width: 520px) {
     .field-row { flex-direction: column; }
-    table { display: block; overflow-x: auto; }
+    .carousel { height: 160px; }
+    .no-photos { height: 160px; }
   }
 </style>
 </head>
@@ -118,7 +155,7 @@
   <!-- SETTINGS -->
   <div class="section">
     <div class="section-label">Settings</div>
-    <div class="card">
+    <div class="form-card">
       <div class="counter-row">
         <div class="counter">
           <label>People</label>
@@ -142,20 +179,16 @@
   <!-- ADD LISTING -->
   <div class="section">
     <div class="section-label">Add a listing</div>
-    <div class="card">
+    <div class="form-card">
 
       <div class="field">
-        <label>Booking URL</label>
-        <div style="display:flex; gap:8px;">
-          <input type="url" id="listing-url" placeholder="https://www.booking.com/..." oninput="onUrlInput()" />
-          <button onclick="tryFetch()" id="fetch-btn">Auto-fill</button>
-        </div>
-        <div class="fetch-status" id="fetch-status"></div>
+        <label>Booking URL <span style="font-weight:400">(tap the card to open it)</span></label>
+        <input type="url" id="listing-url" placeholder="https://www.booking.com/..." oninput="onUrlPaste()" />
       </div>
 
-      <div class="field-row" style="margin-top:4px;">
+      <div class="field-row">
         <div class="field">
-          <label>Property name</label>
+          <label>Property name *</label>
           <input type="text" id="f-name" placeholder="e.g. Villa Sunrise" />
         </div>
         <div class="field">
@@ -180,24 +213,31 @@
       </div>
 
       <div class="field">
-        <label>Highlights (optional)</label>
+        <label>Highlights (comma separated)</label>
         <input type="text" id="f-highlights" placeholder="e.g. pool, A/C, free parking" />
       </div>
 
       <div class="field">
-        <label>Notes (optional)</label>
+        <label>Notes</label>
         <textarea id="f-notes" placeholder="Anything worth mentioning..."></textarea>
       </div>
 
+      <div class="field">
+        <label>Screenshots</label>
+        <label class="file-label" for="f-images">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Choose photos (up to 8)
+        </label>
+        <input type="file" id="f-images" accept="image/*" multiple onchange="previewImages(event)" />
+        <div class="file-previews" id="file-previews"></div>
+      </div>
+
       <div class="btn-row">
+        <span class="upload-progress" id="upload-progress"></span>
         <button onclick="clearForm()">Clear</button>
         <button class="btn-primary" id="add-btn" onclick="addListing()">Add to board</button>
       </div>
 
-      <div class="loader" id="loader">
-        <span class="dots"><span></span><span></span><span></span></span>
-        Fetching page info...
-      </div>
       <div id="notices"></div>
     </div>
   </div>
@@ -214,45 +254,66 @@
   </div>
 
   <div class="empty-board" id="board-empty" style="display:none;">No listings yet — add the first one above.</div>
-  <table id="board-table" style="display:none;">
-    <thead>
-      <tr>
-        <th>Property</th>
-        <th>Beach</th>
-        <th style="text-align:right">Per person</th>
-      </tr>
-    </thead>
-    <tbody id="board-body"></tbody>
-  </table>
+  <div id="board-cards"></div>
 
 </div>
 <script>
-// ── CONFIG ──
 const SUPABASE_URL = 'https://ntobxxiplcamwbfeirno.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50b2J4eGlwbGNhbXdiZmVpcm5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMTA3MTcsImV4cCI6MjA5NTg4NjcxN30.PvKU4CETydg-c2sS53tYvBNrK8rGmohr0c4EJRjeM0c';
-
-// CORS proxies to try in order
-const PROXIES = [
-  url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-];
+const BUCKET     = 'listing-images';
 
 let people = 8, nights = 7;
+let pendingFiles = []; // { file, objectUrl }
 
 // ── CONTROLS ──
 function changePeople(d) { people = Math.max(1, people+d); document.getElementById('people-val').textContent = people; }
 function changeNights(d) { nights = Math.max(1, nights+d); document.getElementById('nights-val').textContent = nights; }
 
-function onUrlInput() {
-  document.getElementById('fetch-status').textContent = '';
-  document.getElementById('fetch-status').className = 'fetch-status';
+function onUrlPaste() {
+  const url = document.getElementById('listing-url').value.trim();
+  if (!url) return;
+  const countryMap = { gr:'Greece', hr:'Croatia', es:'Spain', it:'Italy', fr:'France',
+    pt:'Portugal', de:'Germany', tr:'Turkey', cy:'Cyprus', mt:'Malta', rs:'Serbia',
+    me:'Montenegro', ba:'Bosnia', mk:'North Macedonia', bg:'Bulgaria', ro:'Romania' };
+  const cm = url.match(/booking\.com\/hotel\/([a-z]{2})\//);
+  if (cm && countryMap[cm[1]] && !document.getElementById('f-location').value)
+    document.getElementById('f-location').value = countryMap[cm[1]];
+  const sm = url.match(/\/hotel\/[a-z]{2}\/([^.?#/]+)/);
+  if (sm && !document.getElementById('f-name').value)
+    document.getElementById('f-name').value = sm[1].replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()).slice(0,60);
+}
+
+// ── IMAGE PREVIEWS ──
+function previewImages(e) {
+  const files = Array.from(e.target.files).slice(0, 8 - pendingFiles.length);
+  files.forEach(f => pendingFiles.push({ file: f, objectUrl: URL.createObjectURL(f) }));
+  renderPreviews();
+  // reset input so same file can be re-added after removal
+  e.target.value = '';
+}
+
+function renderPreviews() {
+  const container = document.getElementById('file-previews');
+  container.innerHTML = pendingFiles.map((p, i) => `
+    <div class="file-thumb">
+      <img src="${p.objectUrl}" alt="" />
+      <button class="file-thumb-remove" onclick="removePreview(${i})">x</button>
+    </div>`).join('');
+}
+
+function removePreview(i) {
+  URL.revokeObjectURL(pendingFiles[i].objectUrl);
+  pendingFiles.splice(i, 1);
+  renderPreviews();
 }
 
 function clearForm() {
   ['listing-url','f-name','f-location','f-price','f-beach','f-guests','f-highlights','f-notes']
     .forEach(id => document.getElementById(id).value = '');
-  document.getElementById('fetch-status').textContent = '';
-  document.getElementById('fetch-status').className = 'fetch-status';
+  pendingFiles.forEach(p => URL.revokeObjectURL(p.objectUrl));
+  pendingFiles = [];
+  renderPreviews();
+  document.getElementById('upload-progress').textContent = '';
   clearNotices();
 }
 
@@ -264,167 +325,87 @@ function notice(msg, type) {
   document.getElementById('notices').appendChild(el);
 }
 function clearNotices() { document.getElementById('notices').innerHTML = ''; }
-function setFetchStatus(msg, cls) {
-  const el = document.getElementById('fetch-status');
-  el.textContent = msg;
-  el.className = 'fetch-status' + (cls ? ' ' + cls : '');
+
+// ── UPLOAD IMAGES ──
+async function uploadImages(listingId) {
+  const urls = [];
+  for (let i = 0; i < pendingFiles.length; i++) {
+    const { file } = pendingFiles[i];
+    document.getElementById('upload-progress').textContent = `Uploading photo ${i+1}/${pendingFiles.length}...`;
+    const ext  = file.name.split('.').pop();
+    const path = `${listingId}/${Date.now()}_${i}.${ext}`;
+    const res  = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': file.type,
+        'x-upsert': 'true'
+      },
+      body: file
+    });
+    if (!res.ok) { console.warn('Upload failed for', path); continue; }
+    urls.push(`${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`);
+  }
+  document.getElementById('upload-progress').textContent = '';
+  return urls;
 }
 
-// ── AUTO-FETCH ──
-async function tryFetch() {
-  const url = document.getElementById('listing-url').value.trim();
-  if (!url) { notice('Paste a URL first.', 'warn'); return; }
-
-  document.getElementById('loader').classList.add('active');
-  document.getElementById('fetch-btn').disabled = true;
-  setFetchStatus('Trying to fetch page...', '');
-  clearNotices();
-
-  let html = null;
-
-  for (const proxyFn of PROXIES) {
-    try {
-      const res = await fetch(proxyFn(url), { signal: AbortSignal.timeout(8000) });
-      if (!res.ok) continue;
-      const data = await res.json();
-      // allorigins wraps in .contents, corsproxy returns raw text
-      html = data.contents || data;
-      if (typeof html === 'string' && html.length > 500) break;
-      html = null;
-    } catch { continue; }
-  }
-
-  document.getElementById('loader').classList.remove('active');
-  document.getElementById('fetch-btn').disabled = false;
-
-  if (!html) {
-    setFetchStatus('Could not auto-fetch — fill in the details manually below.', 'err');
-    return;
-  }
-
-  // Parse what we can from raw HTML
-  const parsed = parseHTML(html, url);
-  if (parsed.name)       document.getElementById('f-name').value       = parsed.name;
-  if (parsed.location)   document.getElementById('f-location').value   = parsed.location;
-  if (parsed.price)      document.getElementById('f-price').value      = parsed.price;
-  if (parsed.beach)      document.getElementById('f-beach').value      = parsed.beach;
-  if (parsed.guests)     document.getElementById('f-guests').value     = parsed.guests;
-  if (parsed.highlights) document.getElementById('f-highlights').value = parsed.highlights;
-
-  const filled = [parsed.name, parsed.location, parsed.price].filter(Boolean).length;
-  if (filled >= 2) {
-    setFetchStatus('Some details filled in — check and adjust before adding.', 'ok');
-  } else {
-    setFetchStatus('Could only extract limited info — please fill in the rest manually.', 'err');
-  }
-}
-
-function parseHTML(html, url) {
-  const result = {};
-
-  // Strip tags helper
-  const strip = s => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-
-  // Name — try og:title, then <title>, then h1
-  const ogTitle  = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
-  const titleTag = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-  const h1Tag    = html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
-  result.name = strip((ogTitle?.[1] || titleTag?.[1] || h1Tag?.[1] || ''))
-    .replace(/\s*[-|].*$/, '') // strip " | Booking.com" suffixes
-    .replace(/Book .+? at /i, '')
-    .trim()
-    .slice(0, 80);
-
-  // Location — og:description or meta description often has it
-  const desc = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']{10,}?)["']/i)?.[1] || '';
-  const locMatch = desc.match(/(?:in|at|located in)\s+([A-Z][^,.]{2,30}(?:,\s*[A-Z][^,.]{2,20})?)/i);
-  if (locMatch) result.location = locMatch[1].trim();
-
-  // Try to find location from URL itself
-  if (!result.location) {
-    if (url.includes('booking.com/hotel/')) {
-      const m = url.match(/booking\.com\/hotel\/([a-z]{2})\//);
-      if (m) {
-        const countries = { gr:'Greece', hr:'Croatia', es:'Spain', it:'Italy', fr:'France', pt:'Portugal', de:'Germany', tr:'Turkey', cy:'Cyprus', mt:'Malta' };
-        result.location = countries[m[1]] || m[1].toUpperCase();
-      }
-    }
-  }
-
-  // Price — look for common patterns
-  const pricePatterns = [
-    /(\d[\d,.]+)\s*(?:EUR|€)/i,
-    /(?:EUR|€)\s*(\d[\d,.]+)/i,
-    /"price"\s*:\s*"?(\d+(?:\.\d+)?)"?/i,
-    /totalPrice[^>]*>\s*(?:EUR|€)?\s*(\d[\d,.]+)/i,
-  ];
-  for (const p of pricePatterns) {
-    const m = html.match(p);
-    if (m) {
-      const val = parseFloat(m[1].replace(/,/g, ''));
-      if (val > 50 && val < 100000) { result.price = Math.round(val); break; }
-    }
-  }
-
-  // Guests
-  const guestM = html.match(/(\d+)\s*(?:guests?|people|persons?|sleeps?)/i);
-  if (guestM) result.guests = parseInt(guestM[1]);
-
-  // Beach
-  const beachM = html.match(/(\d+)\s*m(?:etres?|eters?)?\s*(?:from\s+)?(?:the\s+)?beach/i)
-    || html.match(/(?:beach|sea)\s*(?:front|side|view)/i);
-  if (beachM) result.beach = beachM[0].replace(/<[^>]+>/g,'').trim().slice(0,40);
-
-  // Highlights — look for common amenities mentioned
-  const amenities = ['pool','parking','wifi','wi-fi','air conditioning','A/C','kitchen','garden','terrace','balcony','sea view','pet'];
-  const found = amenities.filter(a => new RegExp(a,'i').test(html)).slice(0,4);
-  if (found.length) result.highlights = found.join(', ');
-
-  return result;
-}
-
-// ── ADD TO SUPABASE ──
+// ── ADD LISTING ──
 async function addListing() {
   clearNotices();
-  const name  = document.getElementById('f-name').value.trim();
-  const price = document.getElementById('f-price').value.trim();
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { notice('Property name is required.', 'warn'); return; }
 
-  if (!name)  { notice('Property name is required.', 'warn'); return; }
-
-  const addedBy = document.getElementById('user-name').value.trim() || 'Unknown';
-  const url     = document.getElementById('listing-url').value.trim();
-
-  const payload = {
-    url:            url || null,
-    name,
-    location:       document.getElementById('f-location').value.trim() || null,
-    price_total:    price ? parseFloat(price) : null,
-    price_currency: 'EUR',
-    beach_distance: document.getElementById('f-beach').value.trim() || null,
-    highlights:     document.getElementById('f-highlights').value.trim() || null,
-    notes:          document.getElementById('f-notes').value.trim() || null,
-    added_by:       addedBy,
-    people,
-    nights,
-  };
-
-  document.getElementById('add-btn').disabled = true;
+  const btn = document.getElementById('add-btn');
+  btn.disabled = true;
 
   try {
+    // 1. Insert listing first to get ID
+    const price   = document.getElementById('f-price').value.trim();
+    const payload = {
+      url:            document.getElementById('listing-url').value.trim() || null,
+      name,
+      location:       document.getElementById('f-location').value.trim() || null,
+      price_total:    price ? parseFloat(price) : null,
+      price_currency: 'EUR',
+      beach_distance: document.getElementById('f-beach').value.trim() || null,
+      highlights:     document.getElementById('f-highlights').value.trim() || null,
+      notes:          document.getElementById('f-notes').value.trim() || null,
+      added_by:       document.getElementById('user-name').value.trim() || 'Unknown',
+      people,
+      nights,
+      image_urls:     [],
+    };
+
     const res = await fetch(`${SUPABASE_URL}/rest/v1/listings`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'apikey': SUPABASE_KEY,
         'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Prefer': 'return=minimal'
+        'Prefer': 'return=representation'
       },
       body: JSON.stringify(payload)
     });
+    if (!res.ok) throw new Error(await res.text());
+    const [row] = await res.json();
 
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(err);
+    // 2. Upload images if any
+    if (pendingFiles.length > 0) {
+      const imageUrls = await uploadImages(row.id);
+      if (imageUrls.length > 0) {
+        await fetch(`${SUPABASE_URL}/rest/v1/listings?id=eq.${row.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({ image_urls: imageUrls })
+        });
+      }
     }
 
     clearForm();
@@ -433,7 +414,7 @@ async function addListing() {
     console.error(e);
     notice('Could not save: ' + e.message, 'err');
   } finally {
-    document.getElementById('add-btn').disabled = false;
+    btn.disabled = false;
   }
 }
 
@@ -445,71 +426,104 @@ async function loadBoard() {
       { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
     );
     if (!res.ok) throw new Error(await res.text());
-    const rows = await res.json();
-    renderBoard(rows);
-  } catch(e) {
-    console.error('Board load failed:', e);
-  }
+    renderBoard(await res.json());
+  } catch(e) { console.error('Board load failed:', e); }
 }
 
 function renderBoard(rows) {
   const empty = document.getElementById('board-empty');
-  const table = document.getElementById('board-table');
-  const tbody = document.getElementById('board-body');
+  const cards = document.getElementById('board-cards');
   const count = document.getElementById('board-count');
 
   if (!rows || !rows.length) {
-    empty.style.display = 'block';
-    table.style.display = 'none';
-    count.textContent = '';
-    return;
+    empty.style.display = 'block'; cards.innerHTML = ''; count.textContent = ''; return;
   }
-
   empty.style.display = 'none';
-  table.style.display = 'table';
   count.textContent = rows.length + ' listing' + (rows.length !== 1 ? 's' : '');
 
-  tbody.innerHTML = rows.map(l => {
-    const pp  = l.price_total && l.people ? Math.round(l.price_total / l.people) : null;
-    const ppn = pp && l.nights ? Math.round(pp / l.nights) : null;
-    const when = timeAgo(l.created_at);
-    const beach = l.beach_distance || '—';
+  cards.innerHTML = rows.map((l, li) => {
+    const pp   = l.price_total && l.people ? Math.round(l.price_total / l.people) : null;
+    const ppn  = pp && l.nights ? Math.round(pp / l.nights) : null;
+    const imgs = Array.isArray(l.image_urls) ? l.image_urls : [];
+    const tags = [l.beach_distance, ...(l.highlights ? l.highlights.split(',').map(s=>s.trim()) : [])].filter(Boolean);
 
-    return `<tr>
-      <td>
-        <div class="td-name">${esc(l.name)}</div>
-        ${l.location   ? `<div class="td-loc">${esc(l.location)}</div>` : ''}
-        ${l.highlights ? `<div class="td-hi">${esc(l.highlights)}</div>` : ''}
-        ${l.notes      ? `<div class="td-hi" style="font-style:italic;">${esc(l.notes)}</div>` : ''}
-        ${l.url        ? `<div class="td-link"><a href="${esc(l.url)}" target="_blank" rel="noopener">View listing</a></div>` : ''}
-        <div class="td-who">${esc(l.added_by)} &middot; ${l.people || '?'}p / ${l.nights || '?'}n &middot; ${when}</div>
-      </td>
-      <td style="white-space:nowrap;">${esc(beach)}</td>
-      <td>
-        <div class="td-price">${pp ? '&euro;' + pp.toLocaleString() : '&mdash;'}</div>
-        ${ppn ? `<div class="td-psub">&euro;${ppn}/night</div>` : ''}
-        ${l.price_total ? `<div class="td-psub">&euro;${Math.round(l.price_total).toLocaleString()} total</div>` : ''}
-      </td>
-    </tr>`;
+    const carouselHtml = imgs.length
+      ? `<div class="carousel" id="car-${li}">
+          <div class="carousel-track" id="track-${li}">
+            ${imgs.map(u => `<img src="${esc(u)}" alt="" loading="lazy" />`).join('')}
+          </div>
+          ${imgs.length > 1 ? `
+            <button class="carousel-btn prev" onclick="slide(event,${li},-1)">&#8249;</button>
+            <button class="carousel-btn next" onclick="slide(event,${li},1)">&#8250;</button>
+            <div class="carousel-dots" id="dots-${li}">
+              ${imgs.map((_,i) => `<div class="carousel-dot${i===0?' active':''}" id="dot-${li}-${i}"></div>`).join('')}
+            </div>` : ''}
+        </div>`
+      : `<div class="no-photos">No photos</div>`;
+
+    return `
+    <div class="listing-card" onclick="openListing(event,'${esc(l.url||'')}')">
+      ${carouselHtml}
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-name">${esc(l.name)}</div>
+          <div class="card-price">
+            ${pp ? `<div class="card-price-main">&euro;${pp.toLocaleString()}<span style="font-size:11px;font-weight:400;color:var(--muted)">/person</span></div>` : ''}
+            ${ppn ? `<div class="card-price-sub">&euro;${ppn}/night</div>` : ''}
+            ${l.price_total ? `<div class="card-price-sub">&euro;${Math.round(l.price_total).toLocaleString()} total</div>` : ''}
+          </div>
+        </div>
+        ${l.location ? `<div class="card-loc">${esc(l.location)}</div>` : ''}
+        ${tags.length ? `<div class="card-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+        ${l.notes ? `<div class="card-notes">${esc(l.notes)}</div>` : ''}
+        <div class="card-footer">
+          <span>${esc(l.added_by)} &middot; ${l.people||'?'}p / ${l.nights||'?'}n &middot; ${timeAgo(l.created_at)}</span>
+          ${l.url ? `<span class="card-link">View listing &rarr;</span>` : ''}
+        </div>
+      </div>
+    </div>`;
   }).join('');
+
+  // init carousel indices
+  rows.forEach((_, li) => carIdx[li] = 0);
+}
+
+// ── CAROUSEL ──
+const carIdx = {};
+function slide(e, li, dir) {
+  e.stopPropagation(); // don't open URL when clicking arrows
+  const track = document.getElementById(`track-${li}`);
+  if (!track) return;
+  const total = track.children.length;
+  carIdx[li] = (carIdx[li] + dir + total) % total;
+  track.style.transform = `translateX(-${carIdx[li] * 100}%)`;
+  // update dots
+  const dots = document.querySelectorAll(`[id^="dot-${li}-"]`);
+  dots.forEach((d, i) => d.classList.toggle('active', i === carIdx[li]));
+}
+
+// ── OPEN URL ──
+function openListing(e, url) {
+  // ignore clicks on carousel buttons (handled by stopPropagation)
+  if (!url) return;
+  window.open(url, '_blank', 'noopener');
 }
 
 // ── HELPERS ──
 function timeAgo(ts) {
   const m = Math.floor((Date.now() - new Date(ts)) / 60000);
-  if (m < 2)  return 'just now';
+  if (m < 2) return 'just now';
   if (m < 60) return m + 'm ago';
   const h = Math.floor(m / 60);
   if (h < 24) return h + 'h ago';
   return Math.floor(h / 24) + 'd ago';
 }
 function esc(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // ── INIT ──
 loadBoard();
-// Auto-refresh every 30s so everyone sees new entries
 setInterval(loadBoard, 30000);
 </script>
 </body>
