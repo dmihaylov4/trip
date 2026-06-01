@@ -3,704 +3,514 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Trip Planner — Group Accommodation Finder</title>
+<title>Trip Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <style>
-  :root {
-    --sand:    #f5f0e8;
-    --sand2:   #ede7d8;
-    --ink:     #1a1a14;
-    --ink2:    #3d3d30;
-    --ink3:    #7a7a60;
-    --sea:     #1b6b72;
-    --sea-lt:  #e0f0f1;
-    --sun:     #d4891a;
-    --sun-lt:  #fdf0da;
-    --coral:   #c0473a;
-    --coral-lt:#faeae8;
-    --white:   #ffffff;
-    --radius:  10px;
-    --radius-lg: 16px;
-  }
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:      #f4f2ee;
+    --surface: #ffffff;
+    --border:  #dddbd5;
+    --ink:     #1a1a14;
+    --muted:   #6b6b56;
+    --red:     #b33a2e;
+    --red-bg:  #fdf0ee;
+    --green:   #1a6645;
+    --green-bg:#eaf3ee;
+    --radius:  8px;
+  }
+  body { font-family: 'DM Sans', sans-serif; font-size: 14px; background: var(--bg); color: var(--ink); min-height: 100vh; }
+  .page { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  h1 { font-size: 22px; font-weight: 500; margin-bottom: 2rem; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--sand);
-    color: var(--ink);
-    min-height: 100vh;
-  }
+  .section { margin-bottom: 1.25rem; }
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
 
-  /* ── HERO ── */
-  .hero {
-    background: var(--ink);
-    color: var(--sand);
-    padding: 3rem 2rem 2.5rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  }
-  .hero-inner { max-width: 860px; margin: 0 auto; position: relative; }
-  .hero-tag {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--sun);
-    border: 1px solid var(--sun);
-    padding: 4px 10px;
-    border-radius: 20px;
-    margin-bottom: 1rem;
-  }
-  .hero h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    line-height: 1.15;
-    margin-bottom: 0.75rem;
-  }
-  .hero h1 em { font-style: italic; color: var(--sun); }
-  .hero p {
-    font-size: 15px;
-    color: #9a9a80;
-    max-width: 480px;
-    line-height: 1.6;
-  }
-
-  /* ── LAYOUT ── */
-  .main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
-
-  /* ── CARDS ── */
-  .card {
-    background: var(--white);
-    border: 1px solid var(--sand2);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    margin-bottom: 1.25rem;
-  }
-  .card-title {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink3);
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  /* ── CONTROLS ── */
-  .row { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; }
-  .row input, .row textarea { flex: 1; min-width: 0; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
 
   input[type=text], input[type=url], input[type=number], textarea, select {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--ink);
-    background: var(--sand);
-    border: 1px solid var(--sand2);
-    border-radius: var(--radius);
-    padding: 10px 14px;
-    width: 100%;
-    transition: border-color 0.15s;
-    outline: none;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
+    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 9px 12px; width: 100%; outline: none; transition: border-color 0.15s;
   }
-  input:focus, textarea:focus, select:focus { border-color: var(--sea); background: var(--white); }
-  textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+  input:focus, textarea:focus { border-color: var(--ink); background: #fff; }
+  textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
 
   button {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    border-radius: var(--radius);
-    padding: 10px 16px;
-    border: 1px solid var(--sand2);
-    background: var(--white);
-    color: var(--ink);
-    transition: all 0.15s;
-    white-space: nowrap;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    cursor: pointer; border-radius: var(--radius); padding: 9px 14px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--ink);
+    transition: all 0.12s; white-space: nowrap;
   }
-  button:hover { border-color: var(--ink3); background: var(--sand); }
+  button:hover { border-color: var(--ink); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .btn-primary:hover { background: #333; }
 
-  .btn-primary {
-    background: var(--ink);
-    color: var(--sand);
-    border-color: var(--ink);
-  }
-  .btn-primary:hover { background: var(--ink2); border-color: var(--ink2); color: var(--white); }
+  .field { margin-bottom: 10px; }
+  .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .field-row { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
+  .field-row .field { flex: 1; min-width: 140px; margin-bottom: 0; }
+  .btn-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
 
-  .btn-sea {
-    background: var(--sea);
-    color: var(--white);
-    border-color: var(--sea);
-  }
-  .btn-sea:hover { background: #155a60; border-color: #155a60; }
-
-  /* ── PEOPLE ROW ── */
-  .people-row { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .counter-row { display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; }
   .counter { display: flex; align-items: center; gap: 10px; }
-  .counter-btn {
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; font-weight: 300;
-    flex-shrink: 0;
-    padding: 0;
-  }
-  .counter-val { font-size: 22px; font-weight: 500; min-width: 36px; text-align: center; }
-  .people-label { font-size: 14px; color: var(--ink3); }
+  .counter label { font-size: 13px; color: var(--muted); min-width: 44px; }
+  .counter-btn { width: 30px; height: 30px; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 300; flex-shrink: 0; }
+  .counter-val { font-size: 18px; font-weight: 500; min-width: 28px; text-align: center; }
 
-  /* ── METRICS ── */
-  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 1.25rem; }
-  .metric {
-    background: var(--sand);
-    border: 1px solid var(--sand2);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-  }
-  .metric-lbl { font-size: 11px; color: var(--ink3); margin-bottom: 4px; }
-  .metric-val { font-size: 22px; font-weight: 500; color: var(--ink); line-height: 1.2; }
-  .metric-sub { font-size: 11px; color: var(--ink3); margin-top: 3px; }
+  .notice { font-size: 13px; padding: 10px 12px; border-radius: var(--radius); margin-top: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; line-height: 1.5; }
+  .notice.warn  { background: #fffbe6; border: 1px solid #e8d870; color: #5a4a00; }
+  .notice.err   { background: var(--red-bg); border: 1px solid #e8bebb; color: var(--red); }
+  .notice.ok    { background: var(--green-bg); border: 1px solid #a8d8b8; color: var(--green); }
+  .notice.info  { background: #f0f4ff; border: 1px solid #c0ccee; color: #2a3a7a; }
+  .notice-close { background: none; border: none; padding: 0; font-size: 16px; line-height: 1; cursor: pointer; color: inherit; flex-shrink: 0; }
+  .notice-close:hover { background: none; }
 
-  /* ── LISTING ITEMS ── */
-  .listing-item {
-    display: flex;
-    gap: 14px;
-    padding: 14px;
-    background: var(--sand);
-    border: 1px solid var(--sand2);
-    border-radius: var(--radius);
-    margin-bottom: 8px;
-    align-items: flex-start;
-    animation: slideIn 0.25s ease;
-  }
-  @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  .listing-main { flex: 1; min-width: 0; }
-  .listing-name { font-weight: 500; font-size: 15px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .listing-loc { font-size: 12px; color: var(--ink3); margin-bottom: 8px; }
-  .listing-verdict { font-size: 12px; color: var(--ink2); line-height: 1.5; margin-top: 6px; }
-  .listing-price { text-align: right; flex-shrink: 0; }
-  .price-main { font-size: 18px; font-weight: 600; color: var(--sea); }
-  .price-sub { font-size: 11px; color: var(--ink3); }
-  .price-total { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+  .fetch-status { font-size: 12px; color: var(--muted); margin-top: 6px; min-height: 18px; }
+  .fetch-status.ok  { color: var(--green); }
+  .fetch-status.err { color: var(--red); }
 
-  /* ── TAGS ── */
-  .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-  .tag {
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 20px;
-    border: 1px solid;
-    white-space: nowrap;
-  }
-  .tag-sea   { background: var(--sea-lt);   color: var(--sea);   border-color: #b0d8db; }
-  .tag-sun   { background: var(--sun-lt);   color: #9a5c00;      border-color: #f0d090; }
-  .tag-coral { background: var(--coral-lt); color: var(--coral); border-color: #e8c0bc; }
-  .tag-sand  { background: var(--sand2);    color: var(--ink2);  border-color: #d5cfc0; }
-
-  /* ── LOADING ── */
-  .loading { display: none; align-items: center; gap: 10px; color: var(--ink3); font-size: 13px; padding: 1rem 0; }
-  .loading.active { display: flex; }
-  .dots { display: flex; gap: 4px; }
-  .dots span {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--sea);
-    animation: pulse 1.2s ease-in-out infinite;
-  }
+  .loader { display: none; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; margin-top: 10px; }
+  .loader.active { display: flex; }
+  .dots span { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--muted); margin-right: 3px; animation: blink 1.2s infinite; }
   .dots span:nth-child(2) { animation-delay: 0.2s; }
   .dots span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes pulse { 0%,80%,100% { transform: scale(0.6); opacity:0.4; } 40% { transform: scale(1); opacity:1; } }
+  @keyframes blink { 0%,80%,100% { opacity:0.2; } 40% { opacity:1; } }
 
-  /* ── EMPTY ── */
-  .empty { text-align: center; padding: 2.5rem 1rem; color: var(--ink3); }
-  .empty-icon { font-size: 36px; margin-bottom: 10px; }
-  .empty p { font-size: 14px; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
 
-  /* ── DIVIDER ── */
-  .section-divider {
-    display: flex; align-items: center; gap: 12px;
-    margin: 2.5rem 0 1.5rem;
-    color: var(--ink3); font-size: 11px; font-weight: 600;
-    letter-spacing: 0.1em; text-transform: uppercase;
-  }
-  .section-divider::before, .section-divider::after {
-    content: ''; flex: 1; height: 1px; background: var(--sand2);
-  }
+  .board-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .board-count { font-size: 12px; color: var(--muted); }
+  .text-btn { font-size: 12px; color: var(--muted); background: none; border: none; padding: 0; cursor: pointer; }
+  .text-btn:hover { color: var(--red); border: none; background: none; }
 
-  /* ── COMMUNITY BOARD ── */
-  .board-item {
-    background: var(--white);
-    border: 1px solid var(--sand2);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    animation: slideIn 0.25s ease;
-  }
-  .board-item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-  .board-item-name { font-weight: 500; font-size: 15px; }
-  .board-item-price { font-size: 16px; font-weight: 600; color: var(--sea); }
-  .board-item-meta { font-size: 12px; color: var(--ink3); margin-bottom: 8px; }
-  .board-item-verdict { font-size: 13px; color: var(--ink2); line-height: 1.55; }
-  .board-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11px; color: var(--ink3); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 0 12px 8px 0; border-bottom: 1px solid var(--border); }
+  thead th:last-child { text-align: right; padding-right: 0; }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody td { padding: 12px 12px 12px 0; vertical-align: top; line-height: 1.5; }
+  tbody td:last-child { text-align: right; padding-right: 0; }
+  .td-name { font-weight: 500; }
+  .td-loc  { font-size: 12px; color: var(--muted); }
+  .td-hi   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .td-link { font-size: 12px; margin-top: 3px; }
+  .td-link a { color: var(--muted); text-decoration: underline; }
+  .td-who  { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .td-price { font-weight: 500; font-size: 15px; }
+  .td-psub  { font-size: 11px; color: var(--muted); }
+  .empty-board { font-size: 13px; color: var(--muted); padding: 1.5rem 0; }
 
-  /* ── SHARE ── */
-  .share-bar {
-    display: flex; gap: 8px; margin-top: 1rem;
-  }
-  .share-bar input { font-size: 12px; flex: 1; }
-
-  /* ── REMOVE BTN ── */
-  .remove-btn {
-    background: none; border: none; color: var(--ink3);
-    cursor: pointer; padding: 0; font-size: 18px; line-height: 1;
-    width: 24px; height: 24px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .remove-btn:hover { background: var(--coral-lt); color: var(--coral); border: none; }
-
-  /* ── FOOTER ── */
-  .footer {
-    text-align: center; padding: 2rem;
-    font-size: 12px; color: var(--ink3);
-    border-top: 1px solid var(--sand2);
-  }
-
-  @media (max-width: 600px) {
-    .listing-item { flex-direction: column; }
-    .listing-price { text-align: left; }
-    .people-row { gap: 1rem; }
+  @media (max-width: 520px) {
+    .field-row { flex-direction: column; }
+    table { display: block; overflow-x: auto; }
   }
 </style>
 </head>
 <body>
+<div class="page">
 
-<div class="hero">
-  <div class="hero-inner">
-    <div class="hero-tag">✦ Group travel tool</div>
-    <h1>Find your perfect<br><em>group getaway.</em></h1>
-    <p>Paste any Airbnb or Booking.com listing. Get instant per-person costs, beach distance, car rental estimates, and more.</p>
-  </div>
-</div>
+  <h1>Trip Planner</h1>
 
-<div class="main">
-
-  <!-- CONFIG -->
-  <div class="card">
-    <div class="card-title">⚙ Trip settings</div>
-    <div class="people-row">
-      <div>
-        <div style="font-size:12px;color:var(--ink3);margin-bottom:6px;">People</div>
+  <!-- SETTINGS -->
+  <div class="section">
+    <div class="section-label">Settings</div>
+    <div class="card">
+      <div class="counter-row">
         <div class="counter">
-          <button class="counter-btn" onclick="changePeople(-1)">−</button>
-          <span class="counter-val" id="people-count">8</span>
+          <label>People</label>
+          <button class="counter-btn" onclick="changePeople(-1)">-</button>
+          <span class="counter-val" id="people-val">8</span>
           <button class="counter-btn" onclick="changePeople(1)">+</button>
         </div>
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--ink3);margin-bottom:6px;">Nights</div>
         <div class="counter">
-          <button class="counter-btn" onclick="changeNights(-1)">−</button>
-          <span class="counter-val" id="nights-count">7</span>
+          <label>Nights</label>
+          <button class="counter-btn" onclick="changeNights(-1)">-</button>
+          <span class="counter-val" id="nights-val">7</span>
           <button class="counter-btn" onclick="changeNights(1)">+</button>
         </div>
-      </div>
-      <div style="flex:1;min-width:160px;">
-        <div style="font-size:12px;color:var(--ink3);margin-bottom:6px;">Your name (for board)</div>
-        <input type="text" id="user-name" placeholder="e.g. Dimitar" maxlength="30" />
+        <div style="flex:1; min-width:140px;">
+          <input type="text" id="user-name" placeholder="Your name" maxlength="30" />
+        </div>
       </div>
     </div>
   </div>
 
   <!-- ADD LISTING -->
-  <div class="card">
-    <div class="card-title">＋ Add a listing</div>
-    <div class="row" style="margin-bottom:10px;">
-      <input type="url" id="listing-url" placeholder="Paste Airbnb / Booking.com URL (optional)" />
-    </div>
-    <div style="font-size:12px;color:var(--ink3);margin-bottom:6px;">Paste the listing title, price, and details:</div>
-    <textarea id="listing-text" placeholder="e.g. 'Seaside villa in Halkidiki, sleeps 10, €1,800/week, private pool, 200m from beach, free parking, A/C in all rooms.'"></textarea>
-    <div style="display:flex;justify-content:flex-end;margin-top:10px;gap:8px;">
-      <button onclick="clearForm()">Clear</button>
-      <button class="btn-primary" onclick="analyzeAndAdd()">✦ Analyze listing</button>
-    </div>
-    <div class="loading" id="loading-indicator">
-      <div class="dots"><span></span><span></span><span></span></div>
-      Analyzing with AI...
-    </div>
-  </div>
-
-  <!-- SESSION LISTINGS + SUMMARY -->
-  <div id="session-section" style="display:none;">
+  <div class="section">
+    <div class="section-label">Add a listing</div>
     <div class="card">
-      <div class="card-title">📋 Your session — <span id="session-count">0</span> listing(s)</div>
-      <div id="session-list"></div>
-    </div>
 
-    <div class="card" id="summary-card">
-      <div class="card-title">💰 Cost breakdown</div>
-      <div class="metrics" id="metrics-grid"></div>
-      <div id="car-note"></div>
-      <div class="share-bar">
-        <input type="text" id="share-text" readonly />
-        <button onclick="copyShare()">Copy summary</button>
+      <div class="field">
+        <label>Booking URL</label>
+        <div style="display:flex; gap:8px;">
+          <input type="url" id="listing-url" placeholder="https://www.booking.com/..." oninput="onUrlInput()" />
+          <button onclick="tryFetch()" id="fetch-btn">Auto-fill</button>
+        </div>
+        <div class="fetch-status" id="fetch-status"></div>
       </div>
+
+      <div class="field-row" style="margin-top:4px;">
+        <div class="field">
+          <label>Property name</label>
+          <input type="text" id="f-name" placeholder="e.g. Villa Sunrise" />
+        </div>
+        <div class="field">
+          <label>Location</label>
+          <input type="text" id="f-location" placeholder="e.g. Halkidiki, Greece" />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Total price (EUR)</label>
+          <input type="number" id="f-price" placeholder="e.g. 1800" min="0" />
+        </div>
+        <div class="field">
+          <label>Beach distance</label>
+          <input type="text" id="f-beach" placeholder="e.g. 200m walk" />
+        </div>
+        <div class="field">
+          <label>Max guests</label>
+          <input type="number" id="f-guests" placeholder="e.g. 10" min="1" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Highlights (optional)</label>
+        <input type="text" id="f-highlights" placeholder="e.g. pool, A/C, free parking" />
+      </div>
+
+      <div class="field">
+        <label>Notes (optional)</label>
+        <textarea id="f-notes" placeholder="Anything worth mentioning..."></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button onclick="clearForm()">Clear</button>
+        <button class="btn-primary" id="add-btn" onclick="addListing()">Add to board</button>
+      </div>
+
+      <div class="loader" id="loader">
+        <span class="dots"><span></span><span></span><span></span></span>
+        Fetching page info...
+      </div>
+      <div id="notices"></div>
     </div>
   </div>
 
-  <div id="empty-session" class="empty">
-    <div class="empty-icon">🏖</div>
-    <p>No listings yet — add your first one above.</p>
-  </div>
+  <hr class="divider" />
 
-  <!-- COMMUNITY BOARD -->
-  <div class="section-divider">Previously checked by the group</div>
-
-  <div id="board-container">
-    <div class="empty" id="board-empty">
-      <div class="empty-icon">📌</div>
-      <p>Nothing here yet. Be the first to analyze a listing!</p>
+  <!-- BOARD -->
+  <div class="board-header">
+    <div>
+      <div class="section-label" style="margin:0">All listings</div>
+      <div class="board-count" id="board-count"></div>
     </div>
+    <button class="text-btn" onclick="loadBoard()">Refresh</button>
   </div>
 
-</div>
+  <div class="empty-board" id="board-empty" style="display:none;">No listings yet — add the first one above.</div>
+  <table id="board-table" style="display:none;">
+    <thead>
+      <tr>
+        <th>Property</th>
+        <th>Beach</th>
+        <th style="text-align:right">Per person</th>
+      </tr>
+    </thead>
+    <tbody id="board-body"></tbody>
+  </table>
 
-<div class="footer">
-  Built for the trip. Powered by Claude AI. &nbsp;·&nbsp; Data saved in your browser's localStorage.
 </div>
-
 <script>
-// ── STATE ──
-let people = 8;
-let nights = 7;
-let session = []; // current session listings
+// ── CONFIG ──
+const SUPABASE_URL = 'https://ntobxxiplcamwbfeirno.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50b2J4eGlwbGNhbXdiZmVpcm5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMTA3MTcsImV4cCI6MjA5NTg4NjcxN30.PvKU4CETydg-c2sS53tYvBNrK8rGmohr0c4EJRjeM0c';
 
-// ── PERSIST ──
-const BOARD_KEY = 'trip_planner_board_v2';
+// CORS proxies to try in order
+const PROXIES = [
+  url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+];
 
-function loadBoard() {
-  try { return JSON.parse(localStorage.getItem(BOARD_KEY)) || []; } catch { return []; }
-}
-function saveBoard(items) {
-  localStorage.setItem(BOARD_KEY, JSON.stringify(items));
-}
+let people = 8, nights = 7;
 
 // ── CONTROLS ──
-function changePeople(d) {
-  people = Math.max(1, people + d);
-  document.getElementById('people-count').textContent = people;
-  refreshSession();
+function changePeople(d) { people = Math.max(1, people+d); document.getElementById('people-val').textContent = people; }
+function changeNights(d) { nights = Math.max(1, nights+d); document.getElementById('nights-val').textContent = nights; }
+
+function onUrlInput() {
+  document.getElementById('fetch-status').textContent = '';
+  document.getElementById('fetch-status').className = 'fetch-status';
 }
-function changeNights(d) {
-  nights = Math.max(1, nights + d);
-  document.getElementById('nights-count').textContent = nights;
-  refreshSession();
-}
+
 function clearForm() {
-  document.getElementById('listing-url').value = '';
-  document.getElementById('listing-text').value = '';
+  ['listing-url','f-name','f-location','f-price','f-beach','f-guests','f-highlights','f-notes']
+    .forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fetch-status').textContent = '';
+  document.getElementById('fetch-status').className = 'fetch-status';
+  clearNotices();
 }
 
-// ── ANALYZE ──
-async function analyzeAndAdd() {
-  const text = document.getElementById('listing-text').value.trim();
-  const url  = document.getElementById('listing-url').value.trim();
+// ── NOTICES ──
+function notice(msg, type) {
+  const el = document.createElement('div');
+  el.className = 'notice ' + type;
+  el.innerHTML = `<span>${msg}</span><button class="notice-close" onclick="this.parentElement.remove()">x</button>`;
+  document.getElementById('notices').appendChild(el);
+}
+function clearNotices() { document.getElementById('notices').innerHTML = ''; }
+function setFetchStatus(msg, cls) {
+  const el = document.getElementById('fetch-status');
+  el.textContent = msg;
+  el.className = 'fetch-status' + (cls ? ' ' + cls : '');
+}
 
-  if (!text && !url) {
-    alert('Please paste some listing info or a URL first.');
+// ── AUTO-FETCH ──
+async function tryFetch() {
+  const url = document.getElementById('listing-url').value.trim();
+  if (!url) { notice('Paste a URL first.', 'warn'); return; }
+
+  document.getElementById('loader').classList.add('active');
+  document.getElementById('fetch-btn').disabled = true;
+  setFetchStatus('Trying to fetch page...', '');
+  clearNotices();
+
+  let html = null;
+
+  for (const proxyFn of PROXIES) {
+    try {
+      const res = await fetch(proxyFn(url), { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) continue;
+      const data = await res.json();
+      // allorigins wraps in .contents, corsproxy returns raw text
+      html = data.contents || data;
+      if (typeof html === 'string' && html.length > 500) break;
+      html = null;
+    } catch { continue; }
+  }
+
+  document.getElementById('loader').classList.remove('active');
+  document.getElementById('fetch-btn').disabled = false;
+
+  if (!html) {
+    setFetchStatus('Could not auto-fetch — fill in the details manually below.', 'err');
     return;
   }
-  if (url && !text) {
-    showUrlHint();
-    return;
+
+  // Parse what we can from raw HTML
+  const parsed = parseHTML(html, url);
+  if (parsed.name)       document.getElementById('f-name').value       = parsed.name;
+  if (parsed.location)   document.getElementById('f-location').value   = parsed.location;
+  if (parsed.price)      document.getElementById('f-price').value      = parsed.price;
+  if (parsed.beach)      document.getElementById('f-beach').value      = parsed.beach;
+  if (parsed.guests)     document.getElementById('f-guests').value     = parsed.guests;
+  if (parsed.highlights) document.getElementById('f-highlights').value = parsed.highlights;
+
+  const filled = [parsed.name, parsed.location, parsed.price].filter(Boolean).length;
+  if (filled >= 2) {
+    setFetchStatus('Some details filled in — check and adjust before adding.', 'ok');
+  } else {
+    setFetchStatus('Could only extract limited info — please fill in the rest manually.', 'err');
+  }
+}
+
+function parseHTML(html, url) {
+  const result = {};
+
+  // Strip tags helper
+  const strip = s => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+
+  // Name — try og:title, then <title>, then h1
+  const ogTitle  = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i);
+  const titleTag = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+  const h1Tag    = html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+  result.name = strip((ogTitle?.[1] || titleTag?.[1] || h1Tag?.[1] || ''))
+    .replace(/\s*[-|].*$/, '') // strip " | Booking.com" suffixes
+    .replace(/Book .+? at /i, '')
+    .trim()
+    .slice(0, 80);
+
+  // Location — og:description or meta description often has it
+  const desc = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']{10,}?)["']/i)?.[1] || '';
+  const locMatch = desc.match(/(?:in|at|located in)\s+([A-Z][^,.]{2,30}(?:,\s*[A-Z][^,.]{2,20})?)/i);
+  if (locMatch) result.location = locMatch[1].trim();
+
+  // Try to find location from URL itself
+  if (!result.location) {
+    if (url.includes('booking.com/hotel/')) {
+      const m = url.match(/booking\.com\/hotel\/([a-z]{2})\//);
+      if (m) {
+        const countries = { gr:'Greece', hr:'Croatia', es:'Spain', it:'Italy', fr:'France', pt:'Portugal', de:'Germany', tr:'Turkey', cy:'Cyprus', mt:'Malta' };
+        result.location = countries[m[1]] || m[1].toUpperCase();
+      }
+    }
   }
 
-  // Clear previous errors/hints
-  ['url-hint','analyze-error'].forEach(id => { const el = document.getElementById(id); if(el) el.remove(); });
+  // Price — look for common patterns
+  const pricePatterns = [
+    /(\d[\d,.]+)\s*(?:EUR|€)/i,
+    /(?:EUR|€)\s*(\d[\d,.]+)/i,
+    /"price"\s*:\s*"?(\d+(?:\.\d+)?)"?/i,
+    /totalPrice[^>]*>\s*(?:EUR|€)?\s*(\d[\d,.]+)/i,
+  ];
+  for (const p of pricePatterns) {
+    const m = html.match(p);
+    if (m) {
+      const val = parseFloat(m[1].replace(/,/g, ''));
+      if (val > 50 && val < 100000) { result.price = Math.round(val); break; }
+    }
+  }
 
-  const loader = document.getElementById('loading-indicator');
-  loader.classList.add('active');
+  // Guests
+  const guestM = html.match(/(\d+)\s*(?:guests?|people|persons?|sleeps?)/i);
+  if (guestM) result.guests = parseInt(guestM[1]);
 
-  const jsonSchema = `{
-  "name": "short property name",
-  "location": "city/area, country",
-  "totalPrice": <number, total EUR for whole stay; if a nightly rate is given multiply by nights; if weekly divide by 7 then multiply by nights>,
-  "pricePerNight": <number, total price per night for the whole property>,
-  "maxGuests": <number>,
-  "beachDistance": "<e.g. '200m walk' or 'beachfront' or 'unknown'>",
-  "beachMinutes": <number or null, estimated walking minutes>,
-  "highlights": ["up to 4 short amenity strings"],
-  "carRentalNote": "one sentence about whether a car is needed given the location",
-  "estimatedCarRentalPerDay": <number or null, rough EUR estimate per car per day for this region>,
-  "verdict": "1-2 sentence honest assessment for ${people} people staying ${nights} nights",
-  "currency": "EUR"
-}`;
+  // Beach
+  const beachM = html.match(/(\d+)\s*m(?:etres?|eters?)?\s*(?:from\s+)?(?:the\s+)?beach/i)
+    || html.match(/(?:beach|sea)\s*(?:front|side|view)/i);
+  if (beachM) result.beach = beachM[0].replace(/<[^>]+>/g,'').trim().slice(0,40);
 
-  const prompt = `You are a travel planning assistant. Analyze this accommodation listing and extract structured data.
+  // Highlights — look for common amenities mentioned
+  const amenities = ['pool','parking','wifi','wi-fi','air conditioning','A/C','kitchen','garden','terrace','balcony','sea view','pet'];
+  const found = amenities.filter(a => new RegExp(a,'i').test(html)).slice(0,4);
+  if (found.length) result.highlights = found.join(', ');
 
-URL: ${url || 'not provided'}
-Description: ${text}
+  return result;
+}
 
-The group is ${people} people staying for ${nights} nights.
+// ── ADD TO SUPABASE ──
+async function addListing() {
+  clearNotices();
+  const name  = document.getElementById('f-name').value.trim();
+  const price = document.getElementById('f-price').value.trim();
 
-Return ONLY raw JSON (no markdown, no code fences, no explanation) matching exactly this schema:
-${jsonSchema}
+  if (!name)  { notice('Property name is required.', 'warn'); return; }
 
-If any numeric field cannot be determined from the description, make a reasonable estimate based on the location and property type and note it in the verdict. Never return null for totalPrice — always estimate.`;
+  const addedBy = document.getElementById('user-name').value.trim() || 'Unknown';
+  const url     = document.getElementById('listing-url').value.trim();
+
+  const payload = {
+    url:            url || null,
+    name,
+    location:       document.getElementById('f-location').value.trim() || null,
+    price_total:    price ? parseFloat(price) : null,
+    price_currency: 'EUR',
+    beach_distance: document.getElementById('f-beach').value.trim() || null,
+    highlights:     document.getElementById('f-highlights').value.trim() || null,
+    notes:          document.getElementById('f-notes').value.trim() || null,
+    added_by:       addedBy,
+    people,
+    nights,
+  };
+
+  document.getElementById('add-btn').disabled = true;
 
   try {
-    const res  = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/listings`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(payload)
     });
-    const data = await res.json();
 
-    if (data.error) throw new Error(data.error.message);
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(err);
+    }
 
-    const raw  = data.content.map(b => b.text || '').join('').trim();
-    const jsonStr = raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
-    const info = JSON.parse(jsonStr);
-
-    // Add metadata
-    info._url     = url || null;
-    info._people  = people;
-    info._nights  = nights;
-    info._ts      = Date.now();
-    info._addedBy = document.getElementById('user-name').value.trim() || 'Someone';
-
-    // Add to session
-    session.push(info);
-
-    // Add to persistent board
-    const board = loadBoard();
-    board.unshift(info); // newest first
-    if (board.length > 50) board.length = 50; // cap
-    saveBoard(board);
-
-    refreshSession();
-    renderBoard();
     clearForm();
+    await loadBoard();
   } catch(e) {
     console.error(e);
-    showError('Could not parse the listing. Make sure you paste the property name, price, location and amenities in the text box.');
+    notice('Could not save: ' + e.message, 'err');
   } finally {
-    loader.classList.remove('active');
+    document.getElementById('add-btn').disabled = false;
   }
 }
 
-function showUrlHint() {
-  const existing = document.getElementById('url-hint');
-  if (existing) return;
-  const hint = document.createElement('div');
-  hint.id = 'url-hint';
-  hint.style.cssText = 'background:var(--sun-lt);border:1px solid #f0d090;border-radius:var(--radius);padding:14px 16px;font-size:13px;color:#6b4200;line-height:1.6;margin-top:10px;';
-  hint.innerHTML = '<strong>URL alone is not enough</strong><br>Airbnb and Booking.com block automated access. A URL by itself cannot be fetched.<br><br><strong>Quick fix:</strong> Open the listing, copy the property name, price, and a few details, paste them in the text box below, then click Analyze.<br><br><button onclick="document.getElementById(\'url-hint\').remove();document.getElementById(\'listing-text\').focus();" style="font-size:12px;margin-top:4px;">Got it — I will paste the details</button>';
-  document.getElementById('listing-url').closest('.card').appendChild(hint);
-  document.getElementById('listing-text').focus();
+// ── LOAD BOARD ──
+async function loadBoard() {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/listings?order=created_at.desc&limit=100`,
+      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
+    );
+    if (!res.ok) throw new Error(await res.text());
+    const rows = await res.json();
+    renderBoard(rows);
+  } catch(e) {
+    console.error('Board load failed:', e);
+  }
 }
 
-function showError(msg) {
-  const existing = document.getElementById('analyze-error');
-  if (existing) existing.remove();
-  const el = document.createElement('div');
-  el.id = 'analyze-error';
-  el.style.cssText = 'background:var(--coral-lt);border:1px solid #e8c0bc;border-radius:var(--radius);padding:12px 14px;font-size:13px;color:var(--coral);margin-top:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;';
-  el.innerHTML = '<span>' + msg + '</span><button onclick="this.parentElement.remove()" style="font-size:18px;line-height:1;padding:0;border:none;background:none;color:var(--coral);cursor:pointer;flex-shrink:0;">x</button>';
-  document.getElementById('listing-text').closest('.card').appendChild(el);
-}
+function renderBoard(rows) {
+  const empty = document.getElementById('board-empty');
+  const table = document.getElementById('board-table');
+  const tbody = document.getElementById('board-body');
+  const count = document.getElementById('board-count');
 
-// ── SESSION UI ──
-function refreshSession() {
-  const sec   = document.getElementById('session-section');
-  const empty = document.getElementById('empty-session');
-
-  if (!session.length) {
-    sec.style.display   = 'none';
+  if (!rows || !rows.length) {
     empty.style.display = 'block';
+    table.style.display = 'none';
+    count.textContent = '';
     return;
   }
-  sec.style.display   = 'block';
+
   empty.style.display = 'none';
+  table.style.display = 'table';
+  count.textContent = rows.length + ' listing' + (rows.length !== 1 ? 's' : '');
 
-  document.getElementById('session-count').textContent = session.length;
-  renderSessionList();
-  renderMetrics();
-}
+  tbody.innerHTML = rows.map(l => {
+    const pp  = l.price_total && l.people ? Math.round(l.price_total / l.people) : null;
+    const ppn = pp && l.nights ? Math.round(pp / l.nights) : null;
+    const when = timeAgo(l.created_at);
+    const beach = l.beach_distance || '—';
 
-function renderSessionList() {
-  const list = document.getElementById('session-list');
-  if (!session.length) { list.innerHTML = ''; return; }
-
-  list.innerHTML = session.map((l, i) => {
-    const pp   = l.totalPrice ? Math.round(l.totalPrice / people) : null;
-    const ppn  = l.totalPrice ? Math.round(l.totalPrice / people / nights) : null;
-    const btag = beachTag(l);
-    const htags = (l.highlights || []).slice(0,3).map(h => `<span class="tag tag-sand">${h}</span>`).join('');
-    return `
-    <div class="listing-item">
-      <div class="listing-main">
-        <div class="listing-name">${esc(l.name)}</div>
-        <div class="listing-loc">📍 ${esc(l.location)}</div>
-        <div class="tags">${btag}${htags}</div>
-        ${l.verdict ? `<div class="listing-verdict">${esc(l.verdict)}</div>` : ''}
-      </div>
-      <div class="listing-price">
-        ${pp ? `<div class="price-main">€${pp.toLocaleString()}<small>/person</small></div>` : '<div class="price-main">—</div>'}
-        ${ppn ? `<div class="price-sub">€${ppn}/person/night</div>` : ''}
-        ${l.totalPrice ? `<div class="price-total">€${l.totalPrice.toLocaleString()} total</div>` : ''}
-        <button class="remove-btn" onclick="removeSession(${i})" title="Remove">✕</button>
-      </div>
-    </div>`;
+    return `<tr>
+      <td>
+        <div class="td-name">${esc(l.name)}</div>
+        ${l.location   ? `<div class="td-loc">${esc(l.location)}</div>` : ''}
+        ${l.highlights ? `<div class="td-hi">${esc(l.highlights)}</div>` : ''}
+        ${l.notes      ? `<div class="td-hi" style="font-style:italic;">${esc(l.notes)}</div>` : ''}
+        ${l.url        ? `<div class="td-link"><a href="${esc(l.url)}" target="_blank" rel="noopener">View listing</a></div>` : ''}
+        <div class="td-who">${esc(l.added_by)} &middot; ${l.people || '?'}p / ${l.nights || '?'}n &middot; ${when}</div>
+      </td>
+      <td style="white-space:nowrap;">${esc(beach)}</td>
+      <td>
+        <div class="td-price">${pp ? '&euro;' + pp.toLocaleString() : '&mdash;'}</div>
+        ${ppn ? `<div class="td-psub">&euro;${ppn}/night</div>` : ''}
+        ${l.price_total ? `<div class="td-psub">&euro;${Math.round(l.price_total).toLocaleString()} total</div>` : ''}
+      </td>
+    </tr>`;
   }).join('');
-}
-
-function removeSession(i) {
-  session.splice(i, 1);
-  refreshSession();
-}
-
-function renderMetrics() {
-  const prices = session.filter(l => l.totalPrice).map(l => l.totalPrice);
-  if (!prices.length) { document.getElementById('metrics-grid').innerHTML = ''; return; }
-
-  const minP = Math.min(...prices);
-  const maxP = Math.max(...prices);
-  const carsNeeded = Math.ceil(people / 5);
-  const carEstimates = session.filter(l => l.estimatedCarRentalPerDay).map(l => l.estimatedCarRentalPerDay);
-  const avgCar = carEstimates.length ? Math.round(carEstimates.reduce((a,b)=>a+b,0)/carEstimates.length) : null;
-  const carTotal = avgCar ? avgCar * carsNeeded * nights : null;
-
-  const metrics = [];
-  if (session.length === 1) {
-    metrics.push({ lbl: 'Per person', val: `€${Math.round(minP/people).toLocaleString()}`, sub: `for ${nights} nights` });
-    metrics.push({ lbl: 'Per person/night', val: `€${Math.round(minP/people/nights)}`, sub: `${nights} nights` });
-  } else {
-    metrics.push({ lbl: 'Cheapest/person', val: `€${Math.round(minP/people).toLocaleString()}`, sub: '' });
-    metrics.push({ lbl: 'Priciest/person', val: `€${Math.round(maxP/people).toLocaleString()}`, sub: '' });
-  }
-  metrics.push({ lbl: 'Group size', val: `${people} people`, sub: `${nights} nights` });
-  if (carTotal) {
-    metrics.push({ lbl: 'Car rental/person', val: `€${Math.round(carTotal/people)}`, sub: `${carsNeeded} car${carsNeeded>1?'s':''} × ${nights}n` });
-    metrics.push({ lbl: 'All-in/person', val: `€${Math.round((minP + carTotal)/people).toLocaleString()}`, sub: 'accom + car (cheapest)' });
-  }
-
-  document.getElementById('metrics-grid').innerHTML = metrics.map(m => `
-    <div class="metric">
-      <div class="metric-lbl">${m.lbl}</div>
-      <div class="metric-val">${m.val}</div>
-      ${m.sub ? `<div class="metric-sub">${m.sub}</div>` : ''}
-    </div>`).join('');
-
-  // car note
-  const carNotes = session.filter(l => l.carRentalNote).map(l => l.carRentalNote);
-  const carDiv = document.getElementById('car-note');
-  if (carNotes.length) {
-    carDiv.innerHTML = `<div style="background:var(--sea-lt);border:1px solid #b0d8db;border-radius:var(--radius);padding:12px 14px;font-size:13px;color:var(--sea);margin-bottom:12px;">
-      🚗 ${carNotes[0]}</div>`;
-  } else { carDiv.innerHTML = ''; }
-
-  // share text
-  const lines = session.map(l => {
-    const pp = l.totalPrice ? `€${Math.round(l.totalPrice/people)}/pp` : '';
-    return `• ${l.name} (${l.location}) — ${pp} · Beach: ${l.beachDistance || '?'}`;
-  }).join('\n');
-  document.getElementById('share-text').value =
-    `🏖 Trip options for ${people} people, ${nights} nights:\n${lines}`;
-}
-
-function copyShare() {
-  const t = document.getElementById('share-text');
-  navigator.clipboard.writeText(t.value).then(() => {
-    const btn = event.target;
-    btn.textContent = '✓ Copied!';
-    setTimeout(() => btn.textContent = 'Copy summary', 2000);
-  });
-}
-
-// ── COMMUNITY BOARD ──
-function renderBoard() {
-  const board     = loadBoard();
-  const container = document.getElementById('board-container');
-  const empty     = document.getElementById('board-empty');
-
-  if (!board.length) {
-    empty.style.display = 'block';
-    return;
-  }
-  empty.style.display = 'none';
-
-  const html = board.map((l, i) => {
-    const pp  = l.totalPrice && l._people ? Math.round(l.totalPrice / l._people) : null;
-    const when = l._ts ? timeAgo(l._ts) : '';
-    const who  = l._addedBy || 'Someone';
-    const btag = beachTag(l);
-    const htags = (l.highlights || []).slice(0,3).map(h => `<span class="tag tag-sand">${h}</span>`).join('');
-    return `
-    <div class="board-item">
-      <div class="board-item-header">
-        <div>
-          <div class="board-item-name">${esc(l.name)}</div>
-          <div class="board-item-meta">📍 ${esc(l.location)} &nbsp;·&nbsp; ${l._people || '?'} people, ${l._nights || '?'} nights</div>
-        </div>
-        ${pp ? `<div class="board-item-price">€${pp.toLocaleString()}<small style="font-size:11px;font-weight:400;color:var(--ink3)">/person</small></div>` : ''}
-      </div>
-      <div class="tags" style="margin-bottom:8px;">${btag}${htags}</div>
-      ${l.verdict ? `<div class="board-item-verdict">${esc(l.verdict)}</div>` : ''}
-      <div class="board-item-footer">
-        <span>Added by <strong>${esc(who)}</strong> ${when}</span>
-        ${l.totalPrice ? `<span>€${l.totalPrice.toLocaleString()} total</span>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-
-  // Replace all board items (not the empty placeholder)
-  const existing = container.querySelectorAll('.board-item');
-  existing.forEach(e => e.remove());
-  container.insertAdjacentHTML('afterbegin', html);
 }
 
 // ── HELPERS ──
-function beachTag(l) {
-  if (!l.beachDistance || l.beachDistance === 'unknown') return `<span class="tag tag-coral">Beach dist. unknown</span>`;
-  const m = l.beachMinutes;
-  if (m === null || m === undefined) return `<span class="tag tag-sand">🏖 ${esc(l.beachDistance)}</span>`;
-  if (m <= 5)  return `<span class="tag tag-sea">🏖 ${esc(l.beachDistance)}</span>`;
-  if (m <= 15) return `<span class="tag tag-sun">🚶 ${esc(l.beachDistance)}</span>`;
-  return `<span class="tag tag-coral">🚗 ${esc(l.beachDistance)}</span>`;
-}
-
-function esc(s) {
-  if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
 function timeAgo(ts) {
-  const diff = Date.now() - ts;
-  const min  = Math.floor(diff / 60000);
-  if (min < 2)  return 'just now';
-  if (min < 60) return `${min}m ago`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr}h ago`;
-  return `${Math.floor(hr/24)}d ago`;
+  const m = Math.floor((Date.now() - new Date(ts)) / 60000);
+  if (m < 2)  return 'just now';
+  if (m < 60) return m + 'm ago';
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + 'h ago';
+  return Math.floor(h / 24) + 'd ago';
+}
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // ── INIT ──
-refreshSession();
-renderBoard();
+loadBoard();
+// Auto-refresh every 30s so everyone sees new entries
+setInterval(loadBoard, 30000);
 </script>
 </body>
 </html>
