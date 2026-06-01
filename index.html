@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Greece 2026</title>
+<title>Trip Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -24,13 +24,12 @@
   body { font-family: 'DM Sans', sans-serif; font-size: 14px; background: var(--bg); color: var(--ink); min-height: 100vh; }
   .page { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
   h1 { font-size: 22px; font-weight: 500; margin-bottom: 2rem; }
-
   .section { margin-bottom: 1.25rem; }
   .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-
   .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+  .form-title { font-size: 13px; font-weight: 500; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
 
-  input[type=text], input[type=url], input[type=number], textarea {
+  input[type=text], input[type=url], input[type=number], input[type=date], textarea {
     font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
     background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
     padding: 9px 12px; width: 100%; outline: none; transition: border-color 0.15s;
@@ -38,40 +37,34 @@
   input:focus, textarea:focus { border-color: var(--ink); background: #fff; }
   textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
 
-  /* file input */
-  .file-label {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 13px; color: var(--muted); cursor: pointer;
-    border: 1px dashed var(--border); border-radius: var(--radius);
-    padding: 8px 14px; background: var(--bg); transition: border-color 0.15s;
-    width: 100%;
-  }
+  .file-label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); cursor: pointer; border: 1px dashed var(--border); border-radius: var(--radius); padding: 8px 14px; background: var(--bg); transition: border-color 0.15s; width: 100%; }
   .file-label:hover { border-color: var(--ink); color: var(--ink); }
   input[type=file] { display: none; }
   .file-previews { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
   .file-thumb { position: relative; width: 64px; height: 64px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); flex-shrink: 0; }
   .file-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .file-thumb-remove { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,0.6); color: #fff; border: none; font-size: 11px; line-height: 1; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; }
+  .file-thumb-remove { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,0.6); color: #fff; border: none; font-size: 11px; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; }
   .file-thumb-remove:hover { background: var(--red); }
+  /* existing images in edit mode */
+  .existing-thumb { position: relative; width: 64px; height: 64px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); flex-shrink: 0; }
+  .existing-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .existing-thumb-remove { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,0.6); color: #fff; border: none; font-size: 11px; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; }
+  .existing-thumb-remove:hover { background: var(--red); }
 
-  button {
-    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
-    cursor: pointer; border-radius: var(--radius); padding: 9px 14px;
-    border: 1px solid var(--border); background: var(--surface); color: var(--ink);
-    transition: all 0.12s; white-space: nowrap;
-  }
+  button { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border-radius: var(--radius); padding: 9px 14px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); transition: all 0.12s; white-space: nowrap; }
   button:hover { border-color: var(--ink); }
   button:disabled { opacity: 0.4; cursor: not-allowed; }
   .btn-primary { background: var(--ink); color: #fff; border-color: var(--ink); }
   .btn-primary:hover { background: #333; }
+  .btn-danger { color: var(--red); border-color: var(--border); }
+  .btn-danger:hover { border-color: var(--red); background: var(--red-bg); }
 
   .field { margin-bottom: 10px; }
   .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
   .field-row { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
   .field-row .field { flex: 1; min-width: 130px; margin-bottom: 0; }
   .btn-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; align-items: center; }
-  .upload-progress { font-size: 12px; color: var(--muted); }
-
+  .upload-progress { font-size: 12px; color: var(--muted); margin-right: auto; }
 
   .notice { font-size: 13px; padding: 10px 12px; border-radius: var(--radius); margin-top: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; line-height: 1.5; }
   .notice.warn { background: #fffbe6; border: 1px solid #e8d870; color: #5a4a00; }
@@ -80,37 +73,20 @@
   .notice-close:hover { background: none; }
 
   .divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
-
   .board-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
   .board-count { font-size: 12px; color: var(--muted); margin-top: 2px; }
   .text-btn { font-size: 12px; color: var(--muted); background: none; border: none; padding: 0; cursor: pointer; }
   .text-btn:hover { color: var(--red); border: none; background: none; }
 
-  /* ── LISTING CARDS ── */
-  .listing-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 12px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: box-shadow 0.15s, border-color 0.15s;
-  }
+  /* listing cards */
+  .listing-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; transition: box-shadow 0.15s, border-color 0.15s; }
   .listing-card:hover { border-color: #bbb; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
-  .listing-card[data-url=""] { cursor: default; }
+  .card-clickable { cursor: pointer; }
 
-  /* carousel */
   .carousel { position: relative; background: #e8e4dc; height: 200px; overflow: hidden; }
   .carousel-track { display: flex; height: 100%; transition: transform 0.3s ease; }
   .carousel-track img { flex-shrink: 0; width: 100%; height: 100%; object-fit: cover; }
-  .carousel-btn {
-    position: absolute; top: 50%; transform: translateY(-50%);
-    background: rgba(0,0,0,0.45); color: #fff; border: none;
-    width: 32px; height: 32px; border-radius: 50%; font-size: 16px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; padding: 0; z-index: 2;
-    opacity: 0; transition: opacity 0.15s;
-  }
+  .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.45); color: #fff; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; z-index: 2; opacity: 0; transition: opacity 0.15s; }
   .carousel:hover .carousel-btn { opacity: 1; }
   .carousel-btn.prev { left: 8px; }
   .carousel-btn.next { right: 8px; }
@@ -119,7 +95,6 @@
   .carousel-dot.active { background: #fff; }
   .no-photos { height: 200px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--muted); background: var(--bg); }
 
-  /* card body */
   .card-body { padding: 14px 16px; }
   .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
   .card-name { font-weight: 500; font-size: 15px; line-height: 1.3; }
@@ -131,12 +106,12 @@
   .tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: var(--bg); border: 1px solid var(--border); color: var(--muted); }
   .card-notes { font-size: 12px; color: var(--muted); font-style: italic; margin-bottom: 6px; line-height: 1.5; }
   .card-footer { font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
-  .card-link { font-size: 11px; color: var(--muted); text-decoration: underline; }
+  .card-actions { display: flex; gap: 10px; align-items: center; }
+  .card-edit-btn { font-size: 11px; color: var(--muted); background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; }
+  .card-edit-btn:hover { color: var(--ink); border: none; background: none; }
 
   .empty-board { font-size: 13px; color: var(--muted); padding: 1.5rem 0; }
-
   .paste-zone { position: relative; }
-  .paste-zone.drag-over .file-label { border-color: var(--ink); background: #fff; color: var(--ink); }
 
   @media (max-width: 520px) {
     .field-row { flex-direction: column; }
@@ -148,11 +123,15 @@
 <body>
 <div class="page">
 
-  <h1>Greece 2026</h1>
+  <h1>Trip Planner</h1>
 
-  <!-- ADD LISTING -->
-  <div class="section">
+  <!-- FORM (add + edit) -->
+  <div class="section" id="form-section">
     <div class="form-card">
+      <div class="form-title">
+        <span id="form-title-text">New listing</span>
+        <button class="btn-danger" id="delete-btn" style="display:none; font-size:12px; padding:5px 10px;" onclick="deleteListing()">Delete listing</button>
+      </div>
 
       <div class="field">
         <label>Booking URL <span style="font-weight:400">(tap the card to open it)</span></label>
@@ -204,10 +183,12 @@
 
       <div class="field">
         <label>Screenshots</label>
-        <div id="paste-zone" class="paste-zone" tabindex="0">
+        <!-- existing images shown in edit mode -->
+        <div class="file-previews" id="existing-previews"></div>
+        <div class="paste-zone" style="margin-top:8px;">
           <label class="file-label" for="f-images">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            Choose photos or paste screenshot (Ctrl+V / Cmd+V)
+            Add photos or paste screenshot (Ctrl+V / Cmd+V)
           </label>
           <input type="file" id="f-images" accept="image/*" multiple onchange="previewImages(event)" />
         </div>
@@ -216,8 +197,8 @@
 
       <div class="btn-row">
         <span class="upload-progress" id="upload-progress"></span>
-        <button onclick="clearForm()">Clear</button>
-        <button class="btn-primary" id="add-btn" onclick="addListing()">Add to board</button>
+        <button onclick="cancelEdit()">Cancel</button>
+        <button class="btn-primary" id="save-btn" onclick="saveListing()">Add to board</button>
       </div>
 
       <div id="notices"></div>
@@ -232,7 +213,7 @@
       <div class="section-label" style="margin:0">All listings</div>
       <div class="board-count" id="board-count"></div>
     </div>
-    
+    <button class="text-btn" onclick="loadBoard()">Refresh</button>
   </div>
 
   <div class="empty-board" id="board-empty" style="display:none;">No listings yet — add the first one above.</div>
@@ -242,19 +223,18 @@
 <script>
 const SUPABASE_URL = 'https://ntobxxiplcamwbfeirno.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50b2J4eGlwbGNhbXdiZmVpcm5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMTA3MTcsImV4cCI6MjA5NTg4NjcxN30.PvKU4CETydg-c2sS53tYvBNrK8rGmohr0c4EJRjeM0c';
-const BUCKET     = 'listing-images';
-
+const BUCKET = 'listing-images';
 const people = 8, nights = 7;
-let pendingFiles = []; // { file, objectUrl }
 
-// ── CONTROLS ──
+let pendingFiles  = [];   // new files to upload { file, objectUrl }
+let existingUrls  = [];   // already-saved image URLs (edit mode)
+let editingId     = null; // null = add mode, uuid = edit mode
 
+// ── URL PASTE HELPER ──
 function onUrlPaste() {
   const url = document.getElementById('listing-url').value.trim();
   if (!url) return;
-  const countryMap = { gr:'Greece', hr:'Croatia', es:'Spain', it:'Italy', fr:'France',
-    pt:'Portugal', de:'Germany', tr:'Turkey', cy:'Cyprus', mt:'Malta', rs:'Serbia',
-    me:'Montenegro', ba:'Bosnia', mk:'North Macedonia', bg:'Bulgaria', ro:'Romania' };
+  const countryMap = { gr:'Greece', hr:'Croatia', es:'Spain', it:'Italy', fr:'France', pt:'Portugal', de:'Germany', tr:'Turkey', cy:'Cyprus', mt:'Malta', rs:'Serbia', me:'Montenegro', ba:'Bosnia', mk:'North Macedonia', bg:'Bulgaria', ro:'Romania' };
   const cm = url.match(/booking\.com\/hotel\/([a-z]{2})\//);
   if (cm && countryMap[cm[1]] && !document.getElementById('f-location').value)
     document.getElementById('f-location').value = countryMap[cm[1]];
@@ -263,49 +243,88 @@ function onUrlPaste() {
     document.getElementById('f-name').value = sm[1].replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()).slice(0,60);
 }
 
-// ── IMAGE PREVIEWS ──
-function previewImages(e) {
-  addImageFiles(e.target.files);
-  e.target.value = '';
+// ── IMAGE HANDLING ──
+function addImageFiles(files) {
+  const allowed = Array.from(files).filter(f => f.type.startsWith('image/')).slice(0, 8 - pendingFiles.length - existingUrls.length);
+  allowed.forEach(f => pendingFiles.push({ file: f, objectUrl: URL.createObjectURL(f) }));
+  renderNewPreviews();
 }
+function previewImages(e) { addImageFiles(e.target.files); e.target.value = ''; }
 
-function renderPreviews() {
-  const container = document.getElementById('file-previews');
-  container.innerHTML = pendingFiles.map((p, i) => `
+function renderNewPreviews() {
+  document.getElementById('file-previews').innerHTML = pendingFiles.map((p, i) => `
     <div class="file-thumb">
-      <img src="${p.objectUrl}" alt="" />
-      <button class="file-thumb-remove" onclick="removePreview(${i})">x</button>
+      <img src="${p.objectUrl}" />
+      <button class="file-thumb-remove" onclick="removeNewFile(${i})">x</button>
     </div>`).join('');
 }
 
-function removePreview(i) {
-  URL.revokeObjectURL(pendingFiles[i].objectUrl);
-  pendingFiles.splice(i, 1);
-  renderPreviews();
+function renderExistingPreviews() {
+  document.getElementById('existing-previews').innerHTML = existingUrls.map((u, i) => `
+    <div class="existing-thumb">
+      <img src="${esc(u)}" />
+      <button class="existing-thumb-remove" onclick="removeExistingUrl(${i})">x</button>
+    </div>`).join('');
 }
 
-// ── PASTE & DROP IMAGES ──
-function addImageFiles(files) {
-  const allowed = Array.from(files).filter(f => f.type.startsWith('image/')).slice(0, 8 - pendingFiles.length);
-  allowed.forEach(f => pendingFiles.push({ file: f, objectUrl: URL.createObjectURL(f) }));
-  renderPreviews();
-}
+function removeNewFile(i) { URL.revokeObjectURL(pendingFiles[i].objectUrl); pendingFiles.splice(i,1); renderNewPreviews(); }
+function removeExistingUrl(i) { existingUrls.splice(i,1); renderExistingPreviews(); }
 
-document.addEventListener('paste', function(e) {
+document.addEventListener('paste', e => {
   const items = e.clipboardData && e.clipboardData.items;
   if (!items) return;
-  const imageItems = Array.from(items).filter(i => i.type.startsWith('image/'));
-  if (!imageItems.length) return;
-  const files = imageItems.map(i => i.getAsFile()).filter(Boolean);
-  addImageFiles(files);
+  const files = Array.from(items).filter(i => i.type.startsWith('image/')).map(i => i.getAsFile()).filter(Boolean);
+  if (files.length) addImageFiles(files);
 });
+
+// ── FORM STATE ──
+function setAddMode() {
+  editingId = null;
+  existingUrls = [];
+  document.getElementById('form-title-text').textContent = 'New listing';
+  document.getElementById('save-btn').textContent = 'Add to board';
+  document.getElementById('delete-btn').style.display = 'none';
+  renderExistingPreviews();
+}
+
+function setEditMode(l) {
+  editingId = l.id;
+  existingUrls = Array.isArray(l.image_urls) ? [...l.image_urls] : [];
+
+  document.getElementById('form-title-text').textContent = 'Edit listing';
+  document.getElementById('save-btn').textContent = 'Save changes';
+  document.getElementById('delete-btn').style.display = 'block';
+
+  document.getElementById('listing-url').value  = l.url || '';
+  document.getElementById('f-name').value        = l.name || '';
+  document.getElementById('f-location').value    = l.location || '';
+  document.getElementById('f-price').value       = l.price_total || '';
+  document.getElementById('f-beach').value       = l.beach_distance || '';
+  document.getElementById('f-checkin').value     = l.checkin || '';
+  document.getElementById('f-checkout').value    = l.checkout || '';
+  document.getElementById('f-highlights').value  = l.highlights || '';
+  document.getElementById('f-notes').value       = l.notes || '';
+
+  renderExistingPreviews();
+  renderNewPreviews();
+
+  // scroll to form
+  document.getElementById('form-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function cancelEdit() {
+  clearForm();
+  setAddMode();
+}
 
 function clearForm() {
   ['listing-url','f-name','f-location','f-price','f-beach','f-checkin','f-checkout','f-highlights','f-notes']
     .forEach(id => document.getElementById(id).value = '');
   pendingFiles.forEach(p => URL.revokeObjectURL(p.objectUrl));
   pendingFiles = [];
-  renderPreviews();
+  existingUrls = [];
+  renderNewPreviews();
+  renderExistingPreviews();
   document.getElementById('upload-progress').textContent = '';
   clearNotices();
 }
@@ -325,36 +344,30 @@ async function uploadImages(listingId) {
   for (let i = 0; i < pendingFiles.length; i++) {
     const { file } = pendingFiles[i];
     document.getElementById('upload-progress').textContent = `Uploading photo ${i+1}/${pendingFiles.length}...`;
-    const ext  = file.name.split('.').pop();
+    const ext  = file.name.split('.').pop() || 'jpg';
     const path = `${listingId}/${Date.now()}_${i}.${ext}`;
     const res  = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
       method: 'POST',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': file.type,
-        'x-upsert': 'true'
-      },
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': file.type, 'x-upsert': 'true' },
       body: file
     });
-    if (!res.ok) { console.warn('Upload failed for', path); continue; }
+    if (!res.ok) { console.warn('Upload failed', await res.text()); continue; }
     urls.push(`${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`);
   }
   document.getElementById('upload-progress').textContent = '';
   return urls;
 }
 
-// ── ADD LISTING ──
-async function addListing() {
+// ── SAVE (add or edit) ──
+async function saveListing() {
   clearNotices();
   const name = document.getElementById('f-name').value.trim();
   if (!name) { notice('Property name is required.', 'warn'); return; }
 
-  const btn = document.getElementById('add-btn');
+  const btn = document.getElementById('save-btn');
   btn.disabled = true;
 
   try {
-    // 1. Insert listing first to get ID
     const price   = document.getElementById('f-price').value.trim();
     const payload = {
       url:            document.getElementById('listing-url').value.trim() || null,
@@ -370,46 +383,68 @@ async function addListing() {
       added_by:       'Anonymous',
       people,
       nights,
-      image_urls:     [],
     };
 
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/listings`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify(payload)
-    });
-    if (!res.ok) throw new Error(await res.text());
-    const [row] = await res.json();
+    let listingId;
 
-    // 2. Upload images if any
-    if (pendingFiles.length > 0) {
-      const imageUrls = await uploadImages(row.id);
-      if (imageUrls.length > 0) {
-        await fetch(`${SUPABASE_URL}/rest/v1/listings?id=eq.${row.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-            'Prefer': 'return=minimal'
-          },
-          body: JSON.stringify({ image_urls: imageUrls })
-        });
-      }
+    if (editingId) {
+      // PATCH existing
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/listings?id=eq.${editingId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=minimal' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(await res.text());
+      listingId = editingId;
+    } else {
+      // POST new
+      payload.image_urls = [];
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/listings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=representation' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const [row] = await res.json();
+      listingId = row.id;
     }
 
+    // Upload new images and merge with kept existing ones
+    const newUrls = pendingFiles.length > 0 ? await uploadImages(listingId) : [];
+    const allUrls = [...existingUrls, ...newUrls];
+
+    await fetch(`${SUPABASE_URL}/rest/v1/listings?id=eq.${listingId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ image_urls: allUrls })
+    });
+
     clearForm();
+    setAddMode();
     await loadBoard();
   } catch(e) {
     console.error(e);
     notice('Could not save: ' + e.message, 'err');
   } finally {
     btn.disabled = false;
+  }
+}
+
+// ── DELETE ──
+async function deleteListing() {
+  if (!editingId) return;
+  if (!confirm('Delete this listing?')) return;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/listings?id=eq.${editingId}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    if (!res.ok) throw new Error(await res.text());
+    clearForm();
+    setAddMode();
+    await loadBoard();
+  } catch(e) {
+    notice('Could not delete: ' + e.message, 'err');
   }
 }
 
@@ -456,50 +491,62 @@ function renderBoard(rows) {
         </div>`
       : `<div class="no-photos">No photos</div>`;
 
+    // Store listing data for edit
+    const dataAttr = `data-id="${esc(l.id)}"`;
+
     return `
-    <div class="listing-card" onclick="openListing(event,'${esc(l.url||'')}')">
-      ${carouselHtml}
-      <div class="card-body">
-        <div class="card-top">
-          <div class="card-name">${esc(l.name)}</div>
-          <div class="card-price">
-            ${pp ? `<div class="card-price-main">&euro;${pp.toLocaleString()}<span style="font-size:11px;font-weight:400;color:var(--muted)">/person</span></div>` : ''}
-            ${ppn ? `<div class="card-price-sub">&euro;${ppn}/night</div>` : ''}
-            ${l.price_total ? `<div class="card-price-sub">&euro;${Math.round(l.price_total).toLocaleString()} total</div>` : ''}
+    <div class="listing-card" ${dataAttr}>
+      <div onclick="openListing(event,'${esc(l.url||'')}')" class="${l.url ? 'card-clickable' : ''}">
+        ${carouselHtml}
+        <div class="card-body">
+          <div class="card-top">
+            <div class="card-name">${esc(l.name)}</div>
+            <div class="card-price">
+              ${pp ? `<div class="card-price-main">&euro;${pp.toLocaleString()}<span style="font-size:11px;font-weight:400;color:var(--muted)">/person</span></div>` : ''}
+              ${ppn ? `<div class="card-price-sub">&euro;${ppn}/night</div>` : ''}
+              ${l.price_total ? `<div class="card-price-sub">&euro;${Math.round(l.price_total).toLocaleString()} total</div>` : ''}
+            </div>
           </div>
-        </div>
-        ${l.location ? `<div class="card-loc">${esc(l.location)}</div>` : ''}
-        ${tags.length ? `<div class="card-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
-        ${l.notes ? `<div class="card-notes">${esc(l.notes)}</div>` : ''}
-        <div class="card-footer">
-          <span>${formatDates(l.checkin, l.checkout)}${esc(l.added_by)} &middot; ${timeAgo(l.created_at)}</span>
-          ${l.url ? `<span class="card-link">View listing &rarr;</span>` : ''}
+          ${l.location ? `<div class="card-loc">${esc(l.location)}</div>` : ''}
+          ${tags.length ? `<div class="card-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+          ${l.notes ? `<div class="card-notes">${esc(l.notes)}</div>` : ''}
+          <div class="card-footer">
+            <span>${formatDates(l.checkin, l.checkout)}${timeAgo(l.created_at)}</span>
+            <div class="card-actions">
+              <button class="card-edit-btn" onclick="startEdit(event,'${esc(l.id)}')">Edit</button>
+              ${l.url ? `<span class="card-link" style="cursor:pointer;" onclick="openListing(event,'${esc(l.url)}')">View listing &rarr;</span>` : ''}
+            </div>
+          </div>
         </div>
       </div>
     </div>`;
   }).join('');
 
-  // init carousel indices
   rows.forEach((_, li) => carIdx[li] = 0);
+  // cache rows for edit lookup
+  window._boardRows = rows;
+}
+
+// ── EDIT ──
+function startEdit(e, id) {
+  e.stopPropagation();
+  const row = (window._boardRows || []).find(r => r.id === id);
+  if (row) setEditMode(row);
 }
 
 // ── CAROUSEL ──
 const carIdx = {};
 function slide(e, li, dir) {
-  e.stopPropagation(); // don't open URL when clicking arrows
+  e.stopPropagation();
   const track = document.getElementById(`track-${li}`);
   if (!track) return;
   const total = track.children.length;
   carIdx[li] = (carIdx[li] + dir + total) % total;
   track.style.transform = `translateX(-${carIdx[li] * 100}%)`;
-  // update dots
-  const dots = document.querySelectorAll(`[id^="dot-${li}-"]`);
-  dots.forEach((d, i) => d.classList.toggle('active', i === carIdx[li]));
+  document.querySelectorAll(`[id^="dot-${li}-"]`).forEach((d,i) => d.classList.toggle('active', i === carIdx[li]));
 }
 
-// ── OPEN URL ──
 function openListing(e, url) {
-  // ignore clicks on carousel buttons (handled by stopPropagation)
   if (!url) return;
   window.open(url, '_blank', 'noopener');
 }
@@ -507,12 +554,11 @@ function openListing(e, url) {
 // ── HELPERS ──
 function formatDates(cin, cout) {
   if (!cin && !cout) return '';
-  const fmt = d => { const dt = new Date(d); return dt.toLocaleDateString('en-GB', { day:'numeric', month:'short' }); };
+  const fmt = d => new Date(d).toLocaleDateString('en-GB', { day:'numeric', month:'short' });
   if (cin && cout) return fmt(cin) + ' - ' + fmt(cout) + ' &middot; ';
   if (cin) return 'From ' + fmt(cin) + ' &middot; ';
   return 'Until ' + fmt(cout) + ' &middot; ';
 }
-
 function timeAgo(ts) {
   const m = Math.floor((Date.now() - new Date(ts)) / 60000);
   if (m < 2) return 'just now';
@@ -526,6 +572,7 @@ function esc(s) {
 }
 
 // ── INIT ──
+setAddMode();
 loadBoard();
 setInterval(loadBoard, 30000);
 </script>
