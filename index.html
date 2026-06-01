@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Greece</title>
+<title>Greece 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -181,6 +181,17 @@
         </div>
       </div>
 
+      <div class="field-row">
+        <div class="field">
+          <label>Check-in</label>
+          <input type="date" id="f-checkin" />
+        </div>
+        <div class="field">
+          <label>Check-out</label>
+          <input type="date" id="f-checkout" />
+        </div>
+      </div>
+
       <div class="field">
         <label>Highlights (comma separated)</label>
         <input type="text" id="f-highlights" placeholder="e.g. pool, A/C, free parking" />
@@ -290,7 +301,7 @@ document.addEventListener('paste', function(e) {
 });
 
 function clearForm() {
-  ['listing-url','f-name','f-location','f-price','f-beach','f-highlights','f-notes']
+  ['listing-url','f-name','f-location','f-price','f-beach','f-checkin','f-checkout','f-highlights','f-notes']
     .forEach(id => document.getElementById(id).value = '');
   pendingFiles.forEach(p => URL.revokeObjectURL(p.objectUrl));
   pendingFiles = [];
@@ -352,6 +363,8 @@ async function addListing() {
       price_total:    price ? parseFloat(price) : null,
       price_currency: 'EUR',
       beach_distance: document.getElementById('f-beach').value.trim() || null,
+      checkin:        document.getElementById('f-checkin').value || null,
+      checkout:       document.getElementById('f-checkout').value || null,
       highlights:     document.getElementById('f-highlights').value.trim() || null,
       notes:          document.getElementById('f-notes').value.trim() || null,
       added_by:       'Anonymous',
@@ -459,7 +472,7 @@ function renderBoard(rows) {
         ${tags.length ? `<div class="card-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
         ${l.notes ? `<div class="card-notes">${esc(l.notes)}</div>` : ''}
         <div class="card-footer">
-          <span>${esc(l.added_by)} &middot; ${l.people||'?'}p / ${l.nights||'?'}n &middot; ${timeAgo(l.created_at)}</span>
+          <span>${formatDates(l.checkin, l.checkout)}${esc(l.added_by)} &middot; ${timeAgo(l.created_at)}</span>
           ${l.url ? `<span class="card-link">View listing &rarr;</span>` : ''}
         </div>
       </div>
@@ -492,6 +505,14 @@ function openListing(e, url) {
 }
 
 // ── HELPERS ──
+function formatDates(cin, cout) {
+  if (!cin && !cout) return '';
+  const fmt = d => { const dt = new Date(d); return dt.toLocaleDateString('en-GB', { day:'numeric', month:'short' }); };
+  if (cin && cout) return fmt(cin) + ' - ' + fmt(cout) + ' &middot; ';
+  if (cin) return 'From ' + fmt(cin) + ' &middot; ';
+  return 'Until ' + fmt(cout) + ' &middot; ';
+}
+
 function timeAgo(ts) {
   const m = Math.floor((Date.now() - new Date(ts)) / 60000);
   if (m < 2) return 'just now';
