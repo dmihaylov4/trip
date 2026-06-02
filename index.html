@@ -890,7 +890,7 @@ function renderBoard(rows, commentMap) {
       <div>
         ${carouselHtml}
       </div>
-      <div class="card-hero" onclick="event.stopPropagation()">
+      <div class="card-hero">
         <div>
           ${pp ? `<div style="display:flex;align-items:baseline;gap:5px;"><span class="card-price-main">&euro;${pp.toLocaleString()}</span><span class="card-price-label">/person</span></div>` : '<div class="card-price-main">—</div>'}
           <div class="card-price-subs">${ppn ? `&euro;${ppn}/night &middot; ` : ''}${l.price_total ? `&euro;${Math.round(l.price_total).toLocaleString()} total` : ''}</div>
@@ -1246,7 +1246,7 @@ function renderCars(rows, cmtMap) {
     return `
     <div class="listing-card${c.url?' card-clickable':''}" data-id="${esc(c.id)}" onclick="openListing(event,'${esc(c.url||'')}')">
       <div>${carouselHtml}</div>
-      <div class="card-hero" onclick="event.stopPropagation()">
+      <div class="card-hero">
         <div>
           ${pp ? `<div style="display:flex;align-items:baseline;gap:5px;"><span class="card-price-main">&euro;${pp.toLocaleString()}</span><span class="card-price-label">/person</span></div>` : '<div class="card-price-main">—</div>'}
           <div class="card-price-subs">${c.price_total ? `&euro;${Math.round(c.price_total).toLocaleString()} total` : ''}</div>
