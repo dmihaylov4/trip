@@ -901,7 +901,8 @@ async function loadBoard() {
     const commentMap = {};
     allCmts.forEach(c => (commentMap[c.listing_id] = commentMap[c.listing_id] || []).push(c));
     window._commentMap = commentMap;
-    renderBoard(rows, commentMap);
+    window._allBoardRows = rows;
+    renderBoard(staysLocFilter ? rows.filter(r => r.location === staysLocFilter) : rows, commentMap);
   } catch(e) { console.error('Board load failed:', e); }
 }
 
@@ -1033,7 +1034,7 @@ async function vote(e, id, dir) {
 
   // optimistic UI update
   const row = (window._boardRows || []).find(r => r.id === id);
-  if (row) { row.votes = (row.votes || 0) + delta; renderBoard(window._boardRows, window._commentMap); }
+  if (row) { row.votes = (row.votes || 0) + delta; applyStaysFilter(); }
 
   // persist to supabase using rpc increment
   try {
@@ -1136,12 +1137,12 @@ let carsLocFilter  = '';
 
 function applyStaysFilter() {
   staysLocFilter = document.getElementById('stays-loc-filter').value;
-  const rows = window._boardRows || [];
+  const rows = window._allBoardRows || [];
   renderBoard(staysLocFilter ? rows.filter(r => r.location === staysLocFilter) : rows, window._commentMap);
 }
 function applyCarsFilter() {
   carsLocFilter = document.getElementById('cars-loc-filter').value;
-  const rows = window._carRows || [];
+  const rows = window._allCarRows || [];
   renderCars(carsLocFilter ? rows.filter(r => r.location === carsLocFilter) : rows, window._carCmtMap);
 }
 
@@ -1354,7 +1355,8 @@ async function loadCars() {
     const cmtMap = {};
     allCmts.forEach(c => (cmtMap[c.car_id] = cmtMap[c.car_id] || []).push(c));
     window._carCmtMap = cmtMap;
-    renderCars(rows, cmtMap);
+    window._allCarRows = rows;
+    renderCars(carsLocFilter ? rows.filter(r => r.location === carsLocFilter) : rows, cmtMap);
   } catch(e) { console.error('Cars load failed:', e); }
 }
 function renderCars(rows, cmtMap) {
@@ -1455,7 +1457,7 @@ async function voteCar(e, id, dir) {
   if (!votes[id]) delete votes[id];
   saveCarVotes(votes);
   const row = (window._carRows||[]).find(r=>r.id===id);
-  if (row) { row.votes = (row.votes||0) + delta; renderCars(window._carRows, window._carCmtMap); }
+  if (row) { row.votes = (row.votes||0) + delta; applyCarsFilter(); }
   try {
     await fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_car_votes`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
