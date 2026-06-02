@@ -3,180 +3,203 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Salam 2</title>
+<title>Salam — trip journal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg:         #eee8de;
-    --surface:    #f9f6f1;
-    --border:     #dbd3c6;
-    --ink:        #1c1712;
-    --muted:      #9a8b7a;
-    --accent:     #c04a18;
-    --accent-bg:  #fdf3ed;
-    --red:        #b33a2e;
-    --red-bg:     #fdf0ee;
-    --green:      #1a6645;
-    --green-bg:   #eaf3ee;
-    --radius:     11px;
-    --shadow:     0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.07);
-    --shadow-up:  0 2px 4px rgba(0,0,0,0.05), 0 8px 28px rgba(0,0,0,0.1);
+    --paper:    #f1ead8;
+    --paper-2:  #ebe2cb;
+    --card:     #fbf7ec;
+    --rule:     #1a1208;
+    --ink:      #1a1208;
+    --ink-soft: #4a3a28;
+    --muted:    #8a7659;
+    --stamp:    #b53a1f;
+    --stamp-bg: #f4dfd6;
+    --olive:    #5a6b2f;
+    --olive-bg: #e8ead2;
+    --shadow:   4px 4px 0 var(--rule);
+    --shadow-sm:2px 2px 0 var(--rule);
   }
 
-  body { font-family: 'DM Sans', sans-serif; font-size: 14px; background: var(--bg); color: var(--ink); min-height: 100vh; }
-  .page { max-width: 720px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+  html { background: var(--paper); }
+  body { font-family: 'Inter', sans-serif; font-size: 14.5px; color: var(--ink); background: var(--paper); min-height: 100vh; line-height: 1.5; }
+  .page { max-width: 760px; margin: 0 auto; padding: 3.5rem 1.75rem 6rem; }
 
-  /* ── Page header ── */
-  .page-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.75rem; gap: 1rem; }
-  h1 { font-size: 30px; font-weight: 600; letter-spacing: -0.6px; line-height: 1; }
-  .page-subtitle { font-size: 12px; color: var(--muted); margin-top: 6px; }
-  .trip-meta { font-size: 12px; color: var(--muted); text-align: right; line-height: 1.9; flex-shrink: 0; }
+  /* ── Masthead ── */
+  .masthead { border-bottom: 2px solid var(--rule); padding-bottom: 1.25rem; margin-bottom: 2.5rem; }
+  .kicker { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; margin-bottom: 0.9rem; }
+  .kicker span:nth-child(2) { color: var(--stamp); }
+  h1 { font-family: 'Fraunces', serif; font-weight: 500; font-style: italic; font-size: clamp(54px, 9vw, 88px); line-height: 0.92; letter-spacing: -0.04em; color: var(--ink); }
+  h1 .amp { font-style: italic; color: var(--stamp); font-weight: 400; }
+  .masthead-foot { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-soft); letter-spacing: 0.05em; }
+  .page-subtitle { font-style: italic; font-family: 'Fraunces', serif; font-size: 14px; color: var(--ink-soft); }
+  .trip-meta { text-align: right; line-height: 1.7; }
 
   /* ── Form collapse ── */
-  .section { margin-bottom: 1.5rem; }
-  .section-toggle { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 8px 0; user-select: none; }
-  .section-toggle:hover .section-label { color: var(--ink); }
-  .section-toggle-chevron { color: var(--muted); transition: transform 0.25s ease; flex-shrink: 0; }
-  .form-body { overflow: hidden; max-height: 2000px; opacity: 1; transition: max-height 0.3s ease, opacity 0.2s ease; }
-  .form-body.collapsed { max-height: 0; opacity: 0; }
-
-  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+  .section { margin-bottom: 1.25rem; }
+  .section-toggle { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 10px 0; user-select: none; border-bottom: 1px solid var(--rule); }
+  .section-toggle:hover .section-label { color: var(--stamp); }
+  .section-toggle-chevron { color: var(--rule); transition: transform 0.25s ease; flex-shrink: 0; }
+  .form-body { overflow: hidden; max-height: 3000px; opacity: 1; transition: max-height 0.35s ease, opacity 0.2s ease; padding-top: 1.25rem; }
+  .form-body.collapsed { max-height: 0; opacity: 0; padding-top: 0; }
+  .section-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink); }
 
   /* ── Form card ── */
-  .form-card { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); }
-  .form-title { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
+  .form-card { background: var(--card); border: 1px solid var(--rule); border-radius: 2px; padding: 1.75rem; }
+  .form-title { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 22px; color: var(--ink); margin-bottom: 22px; display: flex; justify-content: space-between; align-items: center; }
 
-  /* ── Inputs: underline style ── */
+  /* ── Inputs ── */
   input[type=text], input[type=url], input[type=number], input[type=date] {
-    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
-    background: transparent; border: none; border-bottom: 1.5px solid var(--border);
-    border-radius: 0; padding: 7px 0; width: 100%; outline: none; transition: border-color 0.15s;
+    font-family: 'Inter', sans-serif; font-size: 15px; color: var(--ink);
+    background: transparent; border: none; border-bottom: 1px solid var(--rule);
+    border-radius: 0; padding: 6px 0 8px; width: 100%; outline: none; transition: border-color 0.15s;
   }
+  input::placeholder, textarea::placeholder { color: var(--muted); font-style: italic; }
   input[type=text]:focus, input[type=url]:focus, input[type=number]:focus, input[type=date]:focus {
-    border-bottom-color: var(--ink);
+    border-bottom-color: var(--stamp); border-bottom-width: 2px; padding-bottom: 7px;
   }
-  textarea {
-    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
-    background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px;
-    padding: 9px 12px; width: 100%; outline: none; resize: vertical; min-height: 64px;
-    line-height: 1.55; transition: border-color 0.15s;
-  }
-  textarea:focus { border-color: var(--ink); background: #fff; }
+  textarea { font-family: 'Inter', sans-serif; font-size: 14.5px; color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 2px; padding: 10px 12px; width: 100%; outline: none; resize: vertical; min-height: 72px; line-height: 1.55; transition: border-color 0.15s; }
+  textarea:focus { border-color: var(--stamp); background: #fff; }
 
   /* ── File upload ── */
-  .file-label { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); cursor: pointer; border: 1.5px dashed var(--border); border-radius: 8px; padding: 8px 14px; background: transparent; transition: border-color 0.15s, color 0.15s; width: 100%; }
-  .file-label:hover { border-color: var(--ink); color: var(--ink); }
+  .file-label { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em; color: var(--ink-soft); cursor: pointer; border: 1.5px dashed var(--rule); border-radius: 2px; padding: 12px 14px; background: var(--paper); transition: all 0.15s; width: 100%; }
+  .file-label:hover { background: var(--stamp-bg); color: var(--stamp); border-color: var(--stamp); }
   input[type=file] { display: none; }
-  .file-previews { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
-  .file-thumb { position: relative; width: 64px; height: 64px; border-radius: 7px; overflow: hidden; border: 1px solid var(--border); flex-shrink: 0; }
-  .file-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .file-thumb-remove { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,0.55); color: #fff; border: none; font-size: 11px; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; }
-  .file-thumb-remove:hover { background: var(--red); }
-  .existing-thumb { position: relative; width: 64px; height: 64px; border-radius: 7px; overflow: hidden; border: 1px solid var(--border); flex-shrink: 0; }
-  .existing-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .existing-thumb-remove { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,0.55); color: #fff; border: none; font-size: 11px; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; }
-  .existing-thumb-remove:hover { background: var(--red); }
+  .file-previews { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .file-thumb, .existing-thumb { position: relative; width: 70px; height: 70px; border-radius: 2px; overflow: hidden; border: 1px solid var(--rule); flex-shrink: 0; }
+  .file-thumb img, .existing-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .file-thumb-remove, .existing-thumb-remove { position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--rule); color: var(--paper); border: none; font-size: 11px; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; }
+  .file-thumb-remove:hover, .existing-thumb-remove:hover { background: var(--stamp); }
 
   /* ── Buttons ── */
-  button { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border-radius: 8px; padding: 9px 16px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); transition: all 0.12s; white-space: nowrap; }
-  button:hover { border-color: #b0a492; }
-  button:disabled { opacity: 0.38; cursor: not-allowed; }
-  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .btn-primary:hover { background: #a83d10; border-color: #a83d10; }
-  .btn-danger { color: var(--red); border-color: transparent; background: transparent; padding-left: 6px; padding-right: 6px; }
-  .btn-danger:hover { border-color: var(--red); background: var(--red-bg); padding-left: 6px; padding-right: 6px; }
+  button { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 2px; padding: 10px 16px; border: 1px solid var(--rule); background: var(--card); color: var(--ink); transition: background 0.15s; white-space: nowrap; }
+  button:hover { background: var(--paper-2); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: var(--stamp); color: var(--card); border-color: var(--stamp); }
+  .btn-primary:hover { background: #9a2f17; }
+  .btn-danger { color: var(--stamp); border-color: transparent; background: transparent; padding: 6px 8px; }
+  .btn-danger:hover { background: var(--stamp-bg); border-color: var(--stamp); }
 
   /* ── Form fields ── */
-  .field { margin-bottom: 16px; }
-  .field label { display: block; font-size: 11px; font-weight: 500; color: var(--muted); margin-bottom: 2px; letter-spacing: 0.02em; }
-  .field-row { display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap; }
-  .field-row .field { flex: 1; min-width: 130px; margin-bottom: 0; }
-  .btn-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); align-items: center; }
-  .upload-progress { font-size: 12px; color: var(--muted); margin-right: auto; }
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 500; color: var(--ink); margin-bottom: 4px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .field label span { text-transform: none; letter-spacing: 0; font-family: 'Fraunces', serif; font-style: italic; color: var(--muted); font-size: 12px; }
+  .field-row { display: flex; gap: 28px; align-items: flex-end; flex-wrap: wrap; }
+  .field-row .field { flex: 1; min-width: 140px; margin-bottom: 0; }
+  .btn-row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--rule); align-items: center; }
+  .upload-progress { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); margin-right: auto; letter-spacing: 0.05em; }
 
   /* ── Notices ── */
-  .notice { font-size: 13px; padding: 10px 12px; border-radius: 8px; margin-top: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; line-height: 1.5; }
-  .notice.warn { background: #fffbe6; border: 1px solid #e8d870; color: #5a4a00; }
-  .notice.err  { background: var(--red-bg); border: 1px solid #e8bebb; color: var(--red); }
-  .notice.ok   { background: var(--green-bg); border: 1px solid #a8d8b8; color: var(--green); }
-  .notice.info { background: #f0f4ff; border: 1px solid #c0ccee; color: #2a3a7a; }
-  .notice-close { background: none; border: none; padding: 0; font-size: 16px; line-height: 1; cursor: pointer; color: inherit; flex-shrink: 0; }
+  .notice { font-size: 13.5px; padding: 11px 14px; border: 1px solid var(--rule); border-left-width: 5px; border-radius: 2px; margin-top: 12px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; line-height: 1.5; }
+  .notice.warn { background: #f6e8b8; border-left-color: #8a6a00; color: #4a3700; }
+  .notice.err  { background: var(--stamp-bg); border-left-color: var(--stamp); color: var(--stamp); }
+  .notice.ok   { background: var(--olive-bg); border-left-color: var(--olive); color: var(--olive); }
+  .notice.info { background: #dde3f0; border-left-color: #3a4a7a; color: #2a3a7a; }
+  .notice-close { background: none; border: none; padding: 0 0 0 4px; font-size: 16px; line-height: 1; cursor: pointer; color: inherit; flex-shrink: 0; letter-spacing: 0; }
   .notice-close:hover { background: none; }
 
   /* ── Board ── */
-  .divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
-  .board-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
-  .board-count { font-size: 12px; color: var(--muted); margin-top: 3px; }
-  .text-btn { font-size: 12px; color: var(--muted); background: none; border: none; padding: 0; cursor: pointer; }
-  .text-btn:hover { color: var(--ink); border: none; background: none; }
+  .divider { border: none; border-top: 1px solid var(--rule); margin: 3rem 0 2rem; }
+  .board-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px; }
+  .board-count { font-family: 'Fraunces', serif; font-style: italic; font-size: 14px; color: var(--muted); margin-top: 4px; }
+  .text-btn { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink); background: none; border: none; padding: 0; cursor: pointer; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 4px; }
+  .text-btn:hover { color: var(--stamp); }
 
   /* ── Listing cards ── */
-  .listing-card { background: var(--surface); border-radius: var(--radius); margin-bottom: 14px; overflow: hidden; box-shadow: var(--shadow); transition: box-shadow 0.2s, transform 0.15s; }
-  .listing-card:hover { box-shadow: var(--shadow-up); transform: translateY(-2px); }
+  .listing-card { background: var(--card); border: 1px solid var(--rule); border-radius: 2px; margin-bottom: 22px; overflow: hidden; transition: box-shadow 0.15s; }
+  .listing-card:hover { box-shadow: var(--shadow); }
   .card-clickable { cursor: pointer; }
 
   /* ── Carousel ── */
-  .carousel { position: relative; background: #ddd6ca; height: 230px; overflow: hidden; }
-  .carousel-track { display: flex; height: 100%; transition: transform 0.3s ease; }
-  .carousel-track img { flex-shrink: 0; width: 100%; height: 100%; object-fit: cover; }
-  .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.38); color: #fff; border: none; width: 34px; height: 34px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; z-index: 2; opacity: 0; transition: opacity 0.15s; }
+  .carousel { position: relative; background: var(--paper-2); height: 260px; overflow: hidden; border-bottom: 1.5px solid var(--rule); }
+  .carousel-track { display: flex; height: 100%; transition: transform 0.35s ease; }
+  .carousel-track img { flex-shrink: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(0.95) contrast(1.02); }
+  .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: var(--card); color: var(--ink); border: 1.5px solid var(--rule); width: 36px; height: 36px; border-radius: 50%; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; z-index: 2; opacity: 0; transition: opacity 0.15s; box-shadow: var(--shadow-sm); letter-spacing: 0; }
   .carousel:hover .carousel-btn, .carousel:focus-within .carousel-btn { opacity: 1; }
-  .carousel-btn.prev { left: 10px; }
-  .carousel-btn.next { right: 10px; }
-  .carousel-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
-  .carousel-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.45); transition: background 0.15s; }
-  .carousel-dot.active { background: #fff; }
-  .no-photos { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--muted); background: var(--bg); }
+  .carousel-btn.prev { left: 12px; }
+  .carousel-btn.next { right: 12px; }
+  .carousel-btn:hover { background: var(--stamp); color: var(--card); }
+  .carousel-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; padding: 4px 8px; background: rgba(26,18,8,0.55); border-radius: 20px; }
+  .carousel-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(251,247,236,0.4); transition: background 0.15s; }
+  .carousel-dot.active { background: var(--card); }
+  .no-photos { height: 130px; display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-style: italic; font-size: 14px; color: var(--muted); background: var(--paper-2); border-bottom: 1.5px solid var(--rule); }
 
   /* ── Card hero ── */
-  .card-hero { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px 0; gap: 10px; }
-  .card-hero-price { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
-  .card-price-main { font-size: 26px; font-weight: 700; color: var(--ink); line-height: 1; letter-spacing: -0.5px; }
-  .card-price-label { font-size: 12px; color: var(--muted); }
-  .card-price-subs { font-size: 11px; color: var(--muted); margin-top: 3px; }
-  .card-hero-votes { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .vote-btn { background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 5px 13px; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
-  .vote-btn:hover { border-color: var(--ink); color: var(--ink); background: var(--bg); }
-  .vote-btn.voted-up   { background: var(--green-bg); border-color: #a8d8b8; color: var(--green); }
-  .vote-btn.voted-down { background: var(--red-bg);   border-color: #e8bebb; color: var(--red); }
-  .vote-score { font-size: 16px; font-weight: 700; min-width: 24px; text-align: center; color: var(--muted); letter-spacing: -0.3px; }
-  .vote-score.positive { color: var(--green); }
-  .vote-score.negative { color: var(--red); }
+  .card-hero { display: flex; justify-content: space-between; align-items: flex-start; padding: 18px 20px 4px; gap: 14px; }
+  .card-price-main { font-family: 'Fraunces', serif; font-weight: 600; font-size: 36px; color: var(--ink); line-height: 1; letter-spacing: -0.03em; }
+  .card-price-label { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-left: 4px; }
+  .card-price-subs { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-top: 6px; letter-spacing: 0.04em; }
+  .card-hero-votes { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .vote-btn { background: var(--card); border: 1px solid var(--rule); border-radius: 2px; padding: 6px 12px; font-size: 10.5px; font-weight: 500; color: var(--ink); cursor: pointer; letter-spacing: 0.08em; text-transform: uppercase; }
+  .vote-btn:hover { background: var(--paper-2); }
+  .vote-btn.voted-up   { background: var(--olive); color: var(--card); border-color: var(--olive); }
+  .vote-btn.voted-down { background: var(--stamp); color: var(--card); border-color: var(--stamp); }
+  .vote-score { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; min-width: 26px; text-align: center; color: var(--ink); letter-spacing: -0.02em; }
+  .vote-score.positive { color: var(--olive); }
+  .vote-score.negative { color: var(--stamp); }
 
   /* ── Card body ── */
-  .card-body { padding: 10px 18px 16px; }
-  .card-name { font-weight: 600; font-size: 15px; line-height: 1.3; margin-bottom: 3px; }
-  .card-dates { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
-  .card-loc { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
-  .card-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
-  .tag { font-size: 11px; padding: 2px 9px; border-radius: 20px; background: var(--bg); color: var(--muted); }
-  .card-notes { font-size: 13px; color: var(--muted); margin-bottom: 10px; line-height: 1.55; }
-  .card-footer { font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border); }
-  .card-actions { display: flex; gap: 12px; align-items: center; }
-  .card-edit-btn { font-size: 11px; color: var(--muted); background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; }
-  .card-edit-btn:hover { color: var(--ink); border: none; background: none; }
-  .card-link { font-size: 11px; color: var(--muted); cursor: pointer; text-decoration: underline; }
+  .card-body { padding: 4px 20px 18px; }
+  .card-name { font-family: 'Fraunces', serif; font-weight: 500; font-style: italic; font-size: 22px; line-height: 1.15; margin-bottom: 6px; color: var(--ink); }
+  .card-dates { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--ink); margin-bottom: 4px; letter-spacing: 0.04em; }
+  .card-loc { font-family: 'Fraunces', serif; font-style: italic; font-size: 14px; color: var(--ink-soft); margin-bottom: 12px; }
+  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 3px 9px; border: 1px solid var(--rule); border-radius: 2px; background: var(--paper); color: var(--ink); letter-spacing: 0.06em; text-transform: lowercase; }
+  .card-notes { font-family: 'Fraunces', serif; font-size: 15px; color: var(--ink-soft); margin-bottom: 14px; line-height: 1.55; font-style: italic; }
+  .card-footer { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--rule); letter-spacing: 0.06em; }
+  .card-actions { display: flex; gap: 14px; align-items: center; }
+  .card-edit-btn { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--ink); background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .card-edit-btn:hover { color: var(--stamp); background: none; }
+  .card-link { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--stamp); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; letter-spacing: 0.08em; text-transform: uppercase; }
 
-  .empty-board { font-size: 13px; color: var(--muted); padding: 2rem 0; }
+  .empty-board { font-family: 'Fraunces', serif; font-style: italic; font-size: 16px; color: var(--muted); padding: 2.5rem 0; text-align: center; }
   .paste-zone { position: relative; }
+
+  /* ── Identity bar ── */
+  .identity-bar { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 1.75rem; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .identity-bar strong { color: var(--ink); font-weight: 500; }
+  .identity-edit { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .identity-edit:hover { color: var(--stamp); border: none; background: none; }
+  .identity-input { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink); background: transparent; border: none; border-bottom: 1px solid var(--rule); border-radius: 0; outline: none; padding: 1px 0; width: 150px; letter-spacing: 0.05em; }
+  .identity-input:focus { border-bottom-color: var(--stamp); }
+
+  /* ── Comments ── */
+  .card-comments { border-top: 1px solid var(--rule); }
+  .comments-toggle-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; cursor: pointer; user-select: none; }
+  .comments-toggle-bar:hover { background: var(--paper); }
+  .comments-label { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); }
+  .comments-showhide { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .comments-showhide:hover { color: var(--stamp); border: none; background: none; }
+  .comments-body { padding: 0 20px 16px; }
+  .comment-item { padding: 10px 0; }
+  .comment-item + .comment-item { border-top: 1px dashed var(--rule); }
+  .comment-meta { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-bottom: 4px; letter-spacing: 0.05em; }
+  .comment-meta strong { color: var(--ink); font-weight: 500; }
+  .comment-text { font-family: 'Fraunces', serif; font-size: 14.5px; color: var(--ink-soft); line-height: 1.5; word-break: break-word; }
+  .comment-form { display: flex; gap: 10px; margin-top: 14px; align-items: flex-end; padding-top: 12px; border-top: 1px solid var(--rule); }
+  .comment-input { flex: 1; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 2px; padding: 8px 12px; outline: none; resize: none; line-height: 1.45; transition: border-color 0.15s; }
+  .comment-input::placeholder { color: var(--muted); font-style: italic; font-family: 'Fraunces', serif; }
+  .comment-input:focus { border-color: var(--stamp); }
+  .comment-submit { font-size: 11px; padding: 8px 14px; flex-shrink: 0; }
+  .no-comments { font-family: 'Fraunces', serif; font-style: italic; font-size: 14px; color: var(--muted); padding: 6px 0 12px; }
 
   /* ── Mobile ── */
   @media (max-width: 600px) {
-    .page { padding: 1.5rem 1rem 3.5rem; }
-    .page-header { flex-direction: column; align-items: flex-start; gap: 4px; margin-bottom: 2rem; }
+    .page { padding: 2rem 1.1rem 4rem; }
+    .masthead-foot { flex-direction: column; align-items: flex-start; gap: 8px; }
     .trip-meta { text-align: left; }
-    h1 { font-size: 24px; }
-    .form-card { padding: 1.1rem; }
+    .form-card { padding: 1.25rem; }
     .field-row { flex-direction: column; gap: 0; }
-    .field-row .field { min-width: 0; width: 100%; margin-bottom: 16px; }
-    .carousel { height: 200px; }
-    .card-hero { padding: 12px 14px 0; }
-    .card-price-main { font-size: 22px; }
-    .card-body { padding: 8px 14px 14px; }
-    .card-footer { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .field-row .field { min-width: 0; width: 100%; margin-bottom: 18px; }
+    .carousel { height: 220px; }
+    .card-hero { padding: 14px 16px 0; }
+    .card-price-main { font-size: 30px; }
+    .card-body { padding: 4px 16px 16px; }
+    .card-footer { flex-direction: column; align-items: flex-start; gap: 10px; }
     .card-actions { width: 100%; justify-content: flex-end; }
     .btn-row { flex-wrap: wrap; }
     .btn-row button { flex: 1; }
@@ -186,13 +209,20 @@
 <body>
 <div class="page">
 
-  <div class="page-header">
-    <div>
-      <h1>Salam</h1>
-      <div class="page-subtitle">Ако нещо не работи — Драго е виновен</div>
+  <header class="masthead">
+    <div class="kicker">
+      <span>Vol. I &nbsp;·&nbsp; No. 02</span>
+      <span>Field notes</span>
+      <span>Est. 2026</span>
     </div>
-    
-  </div>
+    <h1>Salam<span class="amp">,</span> <em>where to?</em></h1>
+    <div class="masthead-foot">
+      <div class="page-subtitle">Ако нещо не работи — Драго е виновен.</div>
+      <div class="trip-meta">01–06 SEP &nbsp;·&nbsp; 8 PAX<br/>SEVEN NIGHTS</div>
+    </div>
+  </header>
+
+  <div id="identity-bar" class="identity-bar"></div>
 
   <!-- FORM (add + edit) -->
   <div class="section" id="form-section">
@@ -204,17 +234,17 @@
     <div class="form-card">
       <div class="form-title">
         <span id="form-title-text">New listing</span>
-        <button class="btn-danger" id="delete-btn" style="display:none; font-size:12px; padding:5px 10px;" onclick="deleteListing()">Delete listing</button>
+        <button class="btn-danger" id="delete-btn" style="display:none;" onclick="deleteListing()">Discard entry</button>
       </div>
 
       <div class="field">
-        <label>Booking URL <span style="font-weight:400">(tap the card to open it)</span></label>
+        <label>Booking link <span>(tap the card to open it)</span></label>
         <input type="url" id="listing-url" placeholder="https://www.booking.com/..." oninput="onUrlPaste()" />
       </div>
 
       <div class="field-row">
         <div class="field">
-          <label>Property name *</label>
+          <label>Property name</label>
           <input type="text" id="f-name" placeholder="e.g. Villa Sunrise" />
         </div>
         <div class="field">
@@ -229,7 +259,7 @@
           <input type="number" id="f-price" placeholder="e.g. 1800" min="0" />
         </div>
         <div class="field">
-          <label>Beach distance</label>
+          <label>To the beach</label>
           <input type="text" id="f-beach" placeholder="e.g. 200m walk" />
         </div>
       </div>
@@ -246,7 +276,7 @@
       </div>
 
       <div class="field">
-        <label>Highlights (comma separated)</label>
+        <label>Highlights</label>
         <input type="text" id="f-highlights" placeholder="e.g. pool, A/C, free parking" />
       </div>
 
@@ -256,7 +286,7 @@
       </div>
 
       <div class="field">
-        <label>Screenshots</label>
+        <label>Photos &amp; screenshots</label>
         <!-- existing images shown in edit mode -->
         <div class="file-previews" id="existing-previews"></div>
         <div class="paste-zone" style="margin-top:8px;">
@@ -272,7 +302,7 @@
       <div class="btn-row">
         <span class="upload-progress" id="upload-progress"></span>
         <button onclick="cancelEdit()">Cancel</button>
-        <button class="btn-primary" id="save-btn" onclick="saveListing()">Add to board</button>
+        <button class="btn-primary" id="save-btn" onclick="saveListing()">File entry</button>
       </div>
 
       <div id="notices"></div>
@@ -285,13 +315,13 @@
   <!-- BOARD -->
   <div class="board-header">
     <div>
-      <div class="section-label" style="margin:0">All listings</div>
+      <div class="section-label" style="margin:0">The contenders</div>
       <div class="board-count" id="board-count"></div>
     </div>
-    <button class="text-btn" onclick="loadBoard()">Refresh</button>
+    <button class="text-btn" onclick="loadBoard()">Reload</button>
   </div>
 
-  <div class="empty-board" id="board-empty" style="display:none;">No listings yet — add the first one above.</div>
+  <div class="empty-board" id="board-empty" style="display:none;">No dispatches yet. File the first one above.</div>
 
   <div id="board-cards"></div>
 
@@ -303,9 +333,44 @@ const BUCKET = 'listing-images';
 const people = 8, nights = 7;
 
 let pendingFiles  = [];
-const VOTES_KEY = 'trip_planner_votes'; // { id: 1 | -1 }   // new files to upload { file, objectUrl }
-let existingUrls  = [];   // already-saved image URLs (edit mode)
-let editingId     = null; // null = add mode, uuid = edit mode
+const VOTES_KEY = 'trip_planner_votes';
+const NAME_KEY  = 'trip_commenter_name';
+let existingUrls  = [];
+let editingId     = null;
+const collapsedComments = new Set();
+
+// ── IDENTITY ──
+function getMyName() { return localStorage.getItem(NAME_KEY) || ''; }
+function setMyName(name) {
+  if (name) localStorage.setItem(NAME_KEY, name);
+  else localStorage.removeItem(NAME_KEY);
+  renderIdentityBar();
+}
+function renderIdentityBar() {
+  const bar = document.getElementById('identity-bar');
+  if (!bar) return;
+  const name = getMyName();
+  if (name) {
+    bar.innerHTML = `Commenting as: <strong>${esc(name)}</strong> &middot; <button class="identity-edit" onclick="editName()">edit</button>`;
+  } else {
+    bar.innerHTML = `Set your name to comment &middot; <button class="identity-edit" onclick="editName()">add name</button>`;
+  }
+}
+function editName() {
+  const bar = document.getElementById('identity-bar');
+  if (!bar) return;
+  const prev = getMyName();
+  bar.innerHTML = `Commenting as: <input class="identity-input" id="name-input" value="${esc(prev)}" placeholder="your name" maxlength="30" /> <span style="font-size:11px;color:var(--muted)">↵ save</span>`;
+  const inp = document.getElementById('name-input');
+  inp.focus(); inp.select();
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); setMyName(inp.value.trim()); }
+    if (e.key === 'Escape') renderIdentityBar();
+  });
+  inp.addEventListener('blur', () => setTimeout(() => {
+    if (document.getElementById('name-input')) setMyName(inp.value.trim() || prev);
+  }, 180));
+}
 
 // ── FORM COLLAPSE ──
 function toggleForm(forceOpen) {
@@ -368,9 +433,9 @@ document.addEventListener('paste', e => {
 function setAddMode() {
   editingId = null;
   existingUrls = [];
-  document.getElementById('form-title-text').textContent = 'New listing';
-  document.getElementById('form-section-label').textContent = 'New listing';
-  document.getElementById('save-btn').textContent = 'Add to board';
+  document.getElementById('form-title-text').textContent = 'New entry';
+  document.getElementById('form-section-label').textContent = 'New entry';
+  document.getElementById('save-btn').textContent = 'File entry';
   document.getElementById('delete-btn').style.display = 'none';
   renderExistingPreviews();
 }
@@ -379,8 +444,8 @@ function setEditMode(l) {
   editingId = l.id;
   existingUrls = Array.isArray(l.image_urls) ? [...l.image_urls] : [];
 
-  document.getElementById('form-title-text').textContent = 'Edit listing';
-  document.getElementById('form-section-label').textContent = 'Edit listing';
+  document.getElementById('form-title-text').textContent = 'Edit entry';
+  document.getElementById('form-section-label').textContent = 'Edit entry';
   document.getElementById('save-btn').textContent = 'Save changes';
   document.getElementById('delete-btn').style.display = 'block';
   toggleForm(true);
@@ -479,7 +544,7 @@ async function saveListing() {
       checkout:       document.getElementById('f-checkout').value || null,
       highlights:     document.getElementById('f-highlights').value.trim() || null,
       notes:          document.getElementById('f-notes').value.trim() || null,
-      added_by:       'Anonymous',
+      added_by:       getMyName() || 'Anonymous',
       people,
       nights,
     };
@@ -544,19 +609,98 @@ async function deleteListing() {
   }
 }
 
+// ── COMMENTS ──
+function commentHtml(c) {
+  return `<div class="comment-item">
+    <div class="comment-meta"><strong>${esc(c.author)}</strong> &middot; ${timeAgo(c.created_at)}</div>
+    <div class="comment-text">${esc(c.body)}</div>
+  </div>`;
+}
+function commentsBodyHtml(id, cmts) {
+  const list = cmts.length ? cmts.map(commentHtml).join('') : '<div class="no-comments">No comments yet.</div>';
+  return list + `<div class="comment-form">
+    <textarea class="comment-input" id="cinput-${id}" placeholder="Add a comment… (⌘↵ to post)"
+      onkeydown="commentKeydown(event,'${id}')"></textarea>
+    <button class="comment-submit" onclick="postComment('${id}')">Post</button>
+  </div>`;
+}
+function commentKeydown(e, id) {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); postComment(id); }
+}
+function toggleComments(id) {
+  const body = document.getElementById(`cbody-${id}`);
+  const btn  = document.getElementById(`ctoggle-${id}`);
+  if (!body) return;
+  if (collapsedComments.has(id)) {
+    collapsedComments.delete(id); body.style.display = ''; if (btn) btn.textContent = 'hide';
+  } else {
+    collapsedComments.add(id); body.style.display = 'none'; if (btn) btn.textContent = 'show';
+  }
+}
+async function postComment(listingId) {
+  const name = getMyName();
+  if (!name) {
+    editName();
+    document.getElementById('identity-bar').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+  const input = document.getElementById(`cinput-${listingId}`);
+  const body  = input ? input.value.trim() : '';
+  if (!body) return;
+  const btn = input.closest('.comment-form').querySelector('.comment-submit');
+  btn.disabled = true; input.disabled = true;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ listing_id: listingId, author: name, body })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    input.value = '';
+    await refreshComments(listingId);
+  } catch(e) { console.error('Comment failed', e); }
+  finally { btn.disabled = false; input.disabled = false; }
+}
+async function refreshComments(listingId) {
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/comments?listing_id=eq.${listingId}&order=created_at.asc`,
+      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
+    );
+    if (!res.ok) return;
+    const cmts = await res.json();
+    if (window._commentMap) window._commentMap[listingId] = cmts;
+    const body = document.getElementById(`cbody-${listingId}`);
+    if (body) {
+      body.innerHTML = commentsBodyHtml(listingId, cmts);
+      if (collapsedComments.has(listingId)) body.style.display = 'none';
+    }
+    const label = document.querySelector(`#chead-${listingId} .comments-label`);
+    if (label) label.textContent = cmts.length ? cmts.length + (cmts.length === 1 ? ' comment' : ' comments') : 'Discussion';
+  } catch(e) { console.error('Refresh comments failed', e); }
+}
+
 // ── LOAD BOARD ──
 async function loadBoard() {
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/listings?order=votes.desc.nullsfirst,created_at.desc&limit=100`,
-      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
-    );
-    if (!res.ok) throw new Error(await res.text());
-    renderBoard(await res.json());
+    const [listRes, cmtRes] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/listings?order=votes.desc.nullsfirst,created_at.desc&limit=100`,
+        { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }),
+      fetch(`${SUPABASE_URL}/rest/v1/comments?order=created_at.asc&limit=2000`,
+        { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } })
+    ]);
+    if (!listRes.ok) throw new Error(await listRes.text());
+    const rows = await listRes.json();
+    const allCmts = cmtRes.ok ? await cmtRes.json() : [];
+    const commentMap = {};
+    allCmts.forEach(c => (commentMap[c.listing_id] = commentMap[c.listing_id] || []).push(c));
+    window._commentMap = commentMap;
+    renderBoard(rows, commentMap);
   } catch(e) { console.error('Board load failed:', e); }
 }
 
-function renderBoard(rows) {
+function renderBoard(rows, commentMap) {
+  commentMap = commentMap || window._commentMap || {};
   const empty = document.getElementById('board-empty');
   const cards = document.getElementById('board-cards');
   const count = document.getElementById('board-count');
@@ -565,13 +709,14 @@ function renderBoard(rows) {
     empty.style.display = 'block'; cards.innerHTML = ''; count.textContent = ''; return;
   }
   empty.style.display = 'none';
-  count.textContent = rows.length + ' listing' + (rows.length !== 1 ? 's' : '');
+  count.textContent = rows.length + (rows.length !== 1 ? ' entries' : ' entry');
 
   cards.innerHTML = rows.map((l, li) => {
     const pp   = l.price_total && l.people ? Math.round(l.price_total / l.people) : null;
     const ppn  = pp && l.nights ? Math.round(pp / l.nights) : null;
     const imgs = Array.isArray(l.image_urls) ? l.image_urls : [];
     const tags = [l.beach_distance, ...(l.highlights ? l.highlights.split(',').map(s=>s.trim()) : [])].filter(Boolean);
+    const cmts = commentMap[l.id] || [];
 
     const carouselHtml = imgs.length
       ? `<div class="carousel" id="car-${li}">
@@ -587,13 +732,11 @@ function renderBoard(rows) {
         </div>`
       : `<div class="no-photos">No photos</div>`;
 
-    // Store listing data for edit
-    const dataAttr = `data-id="${esc(l.id)}"`;
-
     const myVote = (getVotes())[l.id] || 0;
     const scoreClass = (l.votes||0) > 0 ? 'positive' : (l.votes||0) < 0 ? 'negative' : '';
+    const cmtLabel = cmts.length ? cmts.length + (cmts.length === 1 ? ' comment' : ' comments') : 'Discussion';
     return `
-    <div class="listing-card" ${dataAttr}>
+    <div class="listing-card" data-id="${esc(l.id)}">
       <div onclick="openListing(event,'${esc(l.url||'')}')" class="${l.url ? 'card-clickable' : ''}">
         ${carouselHtml}
       </div>
@@ -615,19 +758,33 @@ function renderBoard(rows) {
         ${tags.length ? `<div class="card-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
         ${l.notes ? `<div class="card-notes">${esc(l.notes)}</div>` : ''}
         <div class="card-footer">
-          <span>${timeAgo(l.created_at)}</span>
+          <span>${l.added_by && l.added_by !== 'Anonymous' ? 'Added by ' + esc(l.added_by) : timeAgo(l.created_at)}</span>
           <div class="card-actions">
             <button class="card-edit-btn" onclick="startEdit(event,'${esc(l.id)}')">Edit</button>
-            ${l.url ? `<span class="card-link" onclick="openListing(event,'${esc(l.url)}')">View listing &rarr;</span>` : ''}
+            ${l.url ? `<span class="card-link" onclick="openListing(event,'${esc(l.url)}')">Open link &rarr;</span>` : ''}
           </div>
+        </div>
+      </div>
+      <div class="card-comments">
+        <div class="comments-toggle-bar" id="chead-${l.id}" onclick="toggleComments('${l.id}')">
+          <span class="comments-label">${cmtLabel}</span>
+          <button class="comments-showhide" id="ctoggle-${l.id}">hide</button>
+        </div>
+        <div class="comments-body" id="cbody-${l.id}">
+          ${commentsBodyHtml(l.id, cmts)}
         </div>
       </div>
     </div>`;
   }).join('');
 
   rows.forEach((_, li) => carIdx[li] = 0);
-  // cache rows for edit lookup
   window._boardRows = rows;
+  collapsedComments.forEach(id => {
+    const b = document.getElementById(`cbody-${id}`);
+    const t = document.getElementById(`ctoggle-${id}`);
+    if (b) b.style.display = 'none';
+    if (t) t.textContent = 'show';
+  });
 }
 
 // ── EDIT ──
@@ -675,7 +832,7 @@ async function vote(e, id, dir) {
 
   // optimistic UI update
   const row = (window._boardRows || []).find(r => r.id === id);
-  if (row) { row.votes = (row.votes || 0) + delta; renderBoard(window._boardRows); }
+  if (row) { row.votes = (row.votes || 0) + delta; renderBoard(window._boardRows, window._commentMap); }
 
   // persist to supabase using rpc increment
   try {
@@ -709,6 +866,7 @@ function esc(s) {
 
 // ── INIT ──
 setAddMode();
+renderIdentityBar();
 loadBoard();
 setInterval(loadBoard, 30000);
 </script>
