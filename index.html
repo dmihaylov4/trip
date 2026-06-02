@@ -234,18 +234,18 @@
       </div>
 
       <div class="field">
-        <label>Booking link <span>(tap the card to open it)</span></label>
+        <label>Booking link</label>
         <input type="url" id="listing-url" placeholder="https://www.booking.com/..." oninput="onUrlPaste()" />
       </div>
 
       <div class="field-row">
         <div class="field">
           <label>Property name</label>
-          <input type="text" id="f-name" placeholder="e.g. Villa Sunrise" />
+          <input type="text" id="f-name" placeholder="имито" />
         </div>
         <div class="field">
           <label>Location</label>
-          <input type="text" id="f-location" placeholder="e.g. Halkidiki, Greece" />
+          <input type="text" id="f-location" placeholder="кадя" />
         </div>
       </div>
 
@@ -256,7 +256,7 @@
         </div>
         <div class="field">
           <label>To the beach</label>
-          <input type="text" id="f-beach" placeholder="e.g. 200m walk" />
+          <input type="text" id="f-beach" placeholder="дане вървим много" />
         </div>
       </div>
 
@@ -273,12 +273,12 @@
 
       <div class="field">
         <label>Highlights</label>
-        <input type="text" id="f-highlights" placeholder="e.g. pool, A/C, free parking" />
+        <input type="text" id="f-highlights" placeholder="луксозно ми е" />
       </div>
 
       <div class="field">
         <label>Notes</label>
-        <textarea id="f-notes" placeholder="Anything worth mentioning..."></textarea>
+        <textarea id="f-notes" placeholder="тука може да капризничите"></textarea>
       </div>
 
       <div class="field">
@@ -333,7 +333,7 @@ const VOTES_KEY = 'trip_planner_votes';
 const NAME_KEY  = 'trip_commenter_name';
 let existingUrls  = [];
 let editingId     = null;
-const collapsedComments = new Set();
+const expandedComments = new Set();
 
 // ── IDENTITY ──
 function getMyName() { return localStorage.getItem(NAME_KEY) || ''; }
@@ -627,10 +627,10 @@ function toggleComments(id) {
   const body = document.getElementById(`cbody-${id}`);
   const btn  = document.getElementById(`ctoggle-${id}`);
   if (!body) return;
-  if (collapsedComments.has(id)) {
-    collapsedComments.delete(id); body.style.display = ''; if (btn) btn.textContent = 'hide';
+  if (expandedComments.has(id)) {
+    expandedComments.delete(id); body.style.display = 'none'; if (btn) btn.textContent = 'show';
   } else {
-    collapsedComments.add(id); body.style.display = 'none'; if (btn) btn.textContent = 'show';
+    expandedComments.add(id); body.style.display = ''; if (btn) btn.textContent = 'hide';
   }
 }
 async function postComment(listingId) {
@@ -669,10 +669,10 @@ async function refreshComments(listingId) {
     const body = document.getElementById(`cbody-${listingId}`);
     if (body) {
       body.innerHTML = commentsBodyHtml(listingId, cmts);
-      if (collapsedComments.has(listingId)) body.style.display = 'none';
+      if (!expandedComments.has(listingId)) body.style.display = 'none';
     }
     const label = document.querySelector(`#chead-${listingId} .comments-label`);
-    if (label) label.textContent = cmts.length ? cmts.length + (cmts.length === 1 ? ' comment' : ' comments') : 'Discussion';
+    if (label) label.textContent = cmts.length ? `Discussion (${cmts.length})` : 'Discussion';
   } catch(e) { console.error('Refresh comments failed', e); }
 }
 
@@ -730,7 +730,8 @@ function renderBoard(rows, commentMap) {
 
     const myVote = (getVotes())[l.id] || 0;
     const scoreClass = (l.votes||0) > 0 ? 'positive' : (l.votes||0) < 0 ? 'negative' : '';
-    const cmtLabel = cmts.length ? cmts.length + (cmts.length === 1 ? ' comment' : ' comments') : 'Discussion';
+    const cmtLabel = cmts.length ? `Discussion (${cmts.length})` : 'Discussion';
+    const isExpanded = expandedComments.has(l.id);
     return `
     <div class="listing-card" data-id="${esc(l.id)}">
       <div onclick="openListing(event,'${esc(l.url||'')}')" class="${l.url ? 'card-clickable' : ''}">
@@ -764,9 +765,9 @@ function renderBoard(rows, commentMap) {
       <div class="card-comments">
         <div class="comments-toggle-bar" id="chead-${l.id}" onclick="toggleComments('${l.id}')">
           <span class="comments-label">${cmtLabel}</span>
-          <button class="comments-showhide" id="ctoggle-${l.id}">hide</button>
+          <button class="comments-showhide" id="ctoggle-${l.id}">${isExpanded ? 'hide' : 'show'}</button>
         </div>
-        <div class="comments-body" id="cbody-${l.id}">
+        <div class="comments-body" id="cbody-${l.id}" style="${isExpanded ? '' : 'display:none'}">
           ${commentsBodyHtml(l.id, cmts)}
         </div>
       </div>
@@ -775,12 +776,6 @@ function renderBoard(rows, commentMap) {
 
   rows.forEach((_, li) => carIdx[li] = 0);
   window._boardRows = rows;
-  collapsedComments.forEach(id => {
-    const b = document.getElementById(`cbody-${id}`);
-    const t = document.getElementById(`ctoggle-${id}`);
-    if (b) b.style.display = 'none';
-    if (t) t.textContent = 'show';
-  });
 }
 
 // ── EDIT ──
