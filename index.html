@@ -177,9 +177,15 @@
   .comments-body { padding: 0 20px 16px; }
   .comment-item { padding: 10px 0; }
   .comment-item + .comment-item { border-top: 1px dashed var(--rule); }
-  .comment-meta { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-bottom: 4px; letter-spacing: 0.05em; }
+  .comment-meta { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-bottom: 4px; letter-spacing: 0.05em; display: flex; justify-content: space-between; align-items: center; }
   .comment-meta strong { color: var(--ink); font-weight: 500; }
+  .comment-actions { display: flex; gap: 10px; flex-shrink: 0; }
+  .comment-action-btn { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .comment-action-btn:hover { color: var(--stamp); }
   .comment-text { font-family: 'Fraunces', serif; font-size: 14.5px; color: var(--ink-soft); line-height: 1.5; word-break: break-word; }
+  .comment-edit-input { width: 100%; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 2px; padding: 6px 8px; outline: none; resize: none; line-height: 1.45; transition: border-color 0.15s; margin-top: 2px; }
+  .comment-edit-input:focus { border-color: var(--stamp); }
+  .comment-edit-btns { display: flex; gap: 8px; margin-top: 8px; }
   .comment-form { display: flex; gap: 10px; margin-top: 14px; align-items: flex-end; padding-top: 12px; border-top: 1px solid var(--rule); }
   .comment-input { flex: 1; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 2px; padding: 8px 12px; outline: none; resize: none; line-height: 1.45; transition: border-color 0.15s; }
   .comment-input::placeholder { color: var(--muted); font-style: italic; font-family: 'Fraunces', serif; }
@@ -606,14 +612,21 @@ async function deleteListing() {
 }
 
 // ── COMMENTS ──
-function commentHtml(c) {
-  return `<div class="comment-item">
-    <div class="comment-meta"><strong>${esc(c.author)}</strong> &middot; ${timeAgo(c.created_at)}</div>
-    <div class="comment-text">${esc(c.body)}</div>
+function commentHtml(c, listingId) {
+  const isOwn = getMyName() && getMyName() === c.author;
+  return `<div class="comment-item" id="citem-${c.id}">
+    <div class="comment-meta">
+      <span><strong>${esc(c.author)}</strong> &middot; ${timeAgo(c.created_at)}</span>
+      ${isOwn ? `<span class="comment-actions">
+        <button class="comment-action-btn" onclick="editComment('${c.id}','${esc(listingId)}')">edit</button>
+        <button class="comment-action-btn" onclick="deleteComment('${c.id}','${esc(listingId)}')">delete</button>
+      </span>` : ''}
+    </div>
+    <div class="comment-text" id="ctext-${c.id}" data-body="${esc(c.body)}">${esc(c.body)}</div>
   </div>`;
 }
 function commentsBodyHtml(id, cmts) {
-  const list = cmts.length ? cmts.map(commentHtml).join('') : '<div class="no-comments">No comments yet.</div>';
+  const list = cmts.length ? cmts.map(c => commentHtml(c, id)).join('') : '<div class="no-comments">No comments yet.</div>';
   return list + `<div class="comment-form">
     <textarea class="comment-input" id="cinput-${id}" placeholder="Add a comment… (⌘↵ to post)"
       onkeydown="commentKeydown(event,'${id}')"></textarea>
@@ -657,6 +670,42 @@ async function postComment(listingId) {
   } catch(e) { console.error('Comment failed', e); }
   finally { btn.disabled = false; input.disabled = false; }
 }
+async function deleteComment(commentId, listingId) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/comments?id=eq.${commentId}`, {
+    method: 'DELETE',
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+  });
+  if (res.ok) await refreshComments(listingId);
+}
+function editComment(commentId, listingId) {
+  const textEl = document.getElementById(`ctext-${commentId}`);
+  if (!textEl) return;
+  const body = textEl.dataset.body || '';
+  textEl.innerHTML = `<textarea class="comment-edit-input" id="cedit-${commentId}">${esc(body)}</textarea>
+    <div class="comment-edit-btns">
+      <button class="comment-action-btn" onclick="saveCommentEdit('${commentId}','${listingId}')">Save</button>
+      <button class="comment-action-btn" onclick="cancelCommentEdit('${commentId}','${listingId}')">Cancel</button>
+    </div>`;
+  const ta = document.getElementById(`cedit-${commentId}`);
+  if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+}
+async function saveCommentEdit(commentId, listingId) {
+  const ta = document.getElementById(`cedit-${commentId}`);
+  const newBody = ta ? ta.value.trim() : '';
+  if (!newBody) return;
+  if (ta) ta.disabled = true;
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/comments?id=eq.${commentId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=minimal' },
+    body: JSON.stringify({ body: newBody })
+  });
+  if (res.ok) await refreshComments(listingId);
+  else if (ta) ta.disabled = false;
+}
+async function cancelCommentEdit(commentId, listingId) {
+  await refreshComments(listingId);
+}
+
 async function refreshComments(listingId) {
   try {
     const res = await fetch(
@@ -733,11 +782,11 @@ function renderBoard(rows, commentMap) {
     const cmtLabel = cmts.length ? `Discussion (${cmts.length})` : 'Discussion';
     const isExpanded = expandedComments.has(l.id);
     return `
-    <div class="listing-card" data-id="${esc(l.id)}">
-      <div onclick="openListing(event,'${esc(l.url||'')}')" class="${l.url ? 'card-clickable' : ''}">
+    <div class="listing-card${l.url ? ' card-clickable' : ''}" data-id="${esc(l.id)}" onclick="openListing(event,'${esc(l.url||'')}')">
+      <div>
         ${carouselHtml}
       </div>
-      <div class="card-hero">
+      <div class="card-hero" onclick="event.stopPropagation()">
         <div>
           ${pp ? `<div style="display:flex;align-items:baseline;gap:5px;"><span class="card-price-main">&euro;${pp.toLocaleString()}</span><span class="card-price-label">/person</span></div>` : '<div class="card-price-main">—</div>'}
           <div class="card-price-subs">${ppn ? `&euro;${ppn}/night &middot; ` : ''}${l.price_total ? `&euro;${Math.round(l.price_total).toLocaleString()} total` : ''}</div>
@@ -762,7 +811,7 @@ function renderBoard(rows, commentMap) {
           </div>
         </div>
       </div>
-      <div class="card-comments">
+      <div class="card-comments" onclick="event.stopPropagation()">
         <div class="comments-toggle-bar" id="chead-${l.id}" onclick="toggleComments('${l.id}')">
           <span class="comments-label">${cmtLabel}</span>
           <button class="comments-showhide" id="ctoggle-${l.id}">${isExpanded ? 'hide' : 'show'}</button>
