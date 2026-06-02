@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Salam 3</title>
+<title>Salam — trip journal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -680,6 +680,9 @@ async function deleteComment(commentId, listingId) {
 function editComment(commentId, listingId) {
   const textEl = document.getElementById(`ctext-${commentId}`);
   if (!textEl) return;
+  const cbody = document.getElementById(`cbody-${listingId}`);
+  const form = cbody ? cbody.querySelector('.comment-form') : null;
+  if (form) form.style.display = 'none';
   const body = textEl.dataset.body || '';
   textEl.innerHTML = `<textarea class="comment-edit-input" id="cedit-${commentId}">${esc(body)}</textarea>
     <div class="comment-edit-btns">
