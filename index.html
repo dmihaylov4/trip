@@ -159,6 +159,14 @@
   .empty-board { font-family: 'Fraunces', serif; font-style: italic; font-size: 16px; color: var(--muted); padding: 2.5rem 0; text-align: center; }
   .paste-zone { position: relative; }
 
+  /* ── View switcher ── */
+  .view-switcher { display: flex; align-items: center; gap: 14px; margin-bottom: 2rem; }
+  .view-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); transition: color 0.2s; }
+  .view-label.active { color: var(--ink); font-weight: 500; }
+  .view-spin-btn { background: var(--card); border: 1px solid var(--rule); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; transition: transform 0.45s cubic-bezier(.4,0,.2,1), background 0.15s; letter-spacing: 0; text-transform: none; }
+  .view-spin-btn:hover { background: var(--paper-2); }
+  .view-panel { transition: opacity 0.2s; }
+
   /* ── Identity bar ── */
   .identity-bar { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 1.75rem; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .identity-bar strong { color: var(--ink); font-weight: 500; }
@@ -226,6 +234,15 @@
 
   <div id="identity-bar" class="identity-bar"></div>
 
+  <div class="view-switcher">
+    <span class="view-label active" id="vl-stays">Stays</span>
+    <button class="view-spin-btn" id="view-spin-btn" onclick="switchView()" title="Switch view">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+    </button>
+    <span class="view-label" id="vl-cars">Cars</span>
+  </div>
+
+  <div id="view-stays" class="view-panel">
   <!-- FORM (add + edit) -->
   <div class="section" id="form-section">
     <div class="section-toggle" onclick="toggleForm()">
@@ -326,6 +343,112 @@
   <div class="empty-board" id="board-empty" style="display:none;">No dispatches yet. File the first one above.</div>
 
   <div id="board-cards"></div>
+  </div><!-- /view-stays -->
+
+  <!-- CARS VIEW -->
+  <div id="view-cars" class="view-panel" style="display:none">
+
+    <div class="section" id="car-form-section">
+      <div class="section-toggle" onclick="toggleCarForm()">
+        <div class="section-label" style="margin:0" id="car-form-section-label">New entry</div>
+        <svg class="section-toggle-chevron" id="car-form-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+      </div>
+      <div class="form-body" id="car-form-body">
+      <div class="form-card">
+        <div class="form-title">
+          <span id="car-form-title-text">New entry</span>
+          <button class="btn-danger" id="car-delete-btn" style="display:none;" onclick="deleteCarListing()">Discard entry</button>
+        </div>
+
+        <div class="field">
+          <label>Rental URL <span>(paste to auto-fill dates)</span></label>
+          <input type="url" id="cf-url" placeholder="https://www.rentacar-rhodes.com/..." oninput="onCarUrlPaste()" />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Car / Model *</label>
+            <input type="text" id="cf-name" placeholder="e.g. Toyota Yaris" />
+          </div>
+          <div class="field">
+            <label>Company</label>
+            <input type="text" id="cf-company" placeholder="e.g. Rentacar Rhodes" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Total price (EUR)</label>
+          <input type="number" id="cf-price" placeholder="e.g. 280" min="0" />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Pickup date</label>
+            <input type="date" id="cf-pickup-date" value="2026-09-01" />
+          </div>
+          <div class="field">
+            <label>Pickup time</label>
+            <input type="text" id="cf-pickup-time" placeholder="e.g. 16:30" />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Dropoff date</label>
+            <input type="date" id="cf-dropoff-date" value="2026-09-06" />
+          </div>
+          <div class="field">
+            <label>Dropoff time</label>
+            <input type="text" id="cf-dropoff-time" placeholder="e.g. 14:00" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Highlights</label>
+          <input type="text" id="cf-highlights" placeholder="e.g. AC, automatic, GPS, 5 seats" />
+        </div>
+
+        <div class="field">
+          <label>Notes</label>
+          <textarea id="cf-notes" placeholder="Anything worth mentioning..."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Photos &amp; screenshots</label>
+          <div class="file-previews" id="car-existing-previews"></div>
+          <div class="paste-zone" style="margin-top:8px;">
+            <label class="file-label" for="cf-images">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              Add photos or paste screenshot (Ctrl+V / Cmd+V)
+            </label>
+            <input type="file" id="cf-images" accept="image/*" multiple onchange="carPreviewImages(event)" />
+          </div>
+          <div class="file-previews" id="car-file-previews"></div>
+        </div>
+
+        <div class="btn-row">
+          <span class="upload-progress" id="car-upload-progress"></span>
+          <button onclick="cancelCarEdit()">Cancel</button>
+          <button class="btn-primary" id="car-save-btn" onclick="saveCarListing()">File entry</button>
+        </div>
+        <div id="car-notices"></div>
+      </div>
+      </div><!-- /car-form-body -->
+    </div>
+
+    <hr class="divider" />
+
+    <div class="board-header">
+      <div>
+        <div class="section-label" style="margin:0">On the road</div>
+        <div class="board-count" id="car-board-count"></div>
+      </div>
+      <button class="text-btn" onclick="loadCars()">Reload</button>
+    </div>
+    <div class="empty-board" id="car-board-empty" style="display:none;">No rentals yet. File the first one above.</div>
+    <div id="car-board-cards"></div>
+
+  </div><!-- /view-cars -->
 
 </div>
 <script>
@@ -428,7 +551,14 @@ document.addEventListener('paste', e => {
   const items = e.clipboardData && e.clipboardData.items;
   if (!items) return;
   const files = Array.from(items).filter(i => i.type.startsWith('image/')).map(i => i.getAsFile()).filter(Boolean);
-  if (files.length) addImageFiles(files);
+  if (!files.length) return;
+  if (currentView === 'cars') {
+    const allowed = files.slice(0, 8 - carPendingFiles.length - carExistingUrls.length);
+    allowed.forEach(f => carPendingFiles.push({ file: f, objectUrl: URL.createObjectURL(f) }));
+    renderCarNewPreviews();
+  } else {
+    addImageFiles(files);
+  }
 });
 
 // ── FORM STATE ──
@@ -907,8 +1037,412 @@ function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ── VIEW SWITCHER ──
+let viewRotation = 0;
+let currentView = 'stays';
+function switchView() {
+  viewRotation += 180;
+  document.getElementById('view-spin-btn').style.transform = `rotate(${viewRotation}deg)`;
+  const goingToCars = currentView === 'stays';
+  document.getElementById('view-stays').style.display = goingToCars ? 'none' : '';
+  document.getElementById('view-cars').style.display  = goingToCars ? '' : 'none';
+  document.getElementById('vl-stays').classList.toggle('active', !goingToCars);
+  document.getElementById('vl-cars').classList.toggle('active',  goingToCars);
+  currentView = goingToCars ? 'cars' : 'stays';
+  if (currentView === 'cars') loadCars();
+}
+
+// ── CARS — STATE ──
+let carPendingFiles = [], carExistingUrls = [], carEditingId = null;
+const CAR_VOTES_KEY  = 'trip_car_votes';
+const carExpanded    = new Set();
+
+function getCarVotes() { try { return JSON.parse(localStorage.getItem(CAR_VOTES_KEY)) || {}; } catch { return {}; } }
+function saveCarVotes(v) { localStorage.setItem(CAR_VOTES_KEY, JSON.stringify(v)); }
+
+function onCarUrlPaste() {
+  const url = document.getElementById('cf-url').value;
+  const df = url.match(/date_from=(\d{2})-(\d{2})-(\d{4})/);
+  if (df && !document.getElementById('cf-pickup-date').value) document.getElementById('cf-pickup-date').value = `${df[3]}-${df[2]}-${df[1]}`;
+  const tf = url.match(/time_from=(\d{2})(?:%3A|:)(\d{2})/);
+  if (tf && !document.getElementById('cf-pickup-time').value) document.getElementById('cf-pickup-time').value = `${tf[1]}:${tf[2]}`;
+  const dt = url.match(/date_to=(\d{2})-(\d{2})-(\d{4})/);
+  if (dt && !document.getElementById('cf-dropoff-date').value) document.getElementById('cf-dropoff-date').value = `${dt[3]}-${dt[2]}-${dt[1]}`;
+  const tt = url.match(/time_to=(\d{2})(?:%3A|:)(\d{2})/);
+  if (tt && !document.getElementById('cf-dropoff-time').value) document.getElementById('cf-dropoff-time').value = `${tt[1]}:${tt[2]}`;
+  const dom = url.match(/https?:\/\/(?:www\.)?([^\/]+)/);
+  if (dom && !document.getElementById('cf-company').value)
+    document.getElementById('cf-company').value = dom[1].split('.')[0].replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+}
+
+function toggleCarForm(forceOpen) {
+  const body = document.getElementById('car-form-body');
+  const chev = document.getElementById('car-form-chevron');
+  const open = forceOpen !== undefined ? forceOpen : body.classList.contains('collapsed');
+  body.classList.toggle('collapsed', !open);
+  chev.style.transform = open ? '' : 'rotate(180deg)';
+}
+
+function setCarAddMode() {
+  carEditingId = null; carExistingUrls = [];
+  document.getElementById('car-form-title-text').textContent = 'New entry';
+  document.getElementById('car-form-section-label').textContent = 'New entry';
+  document.getElementById('car-save-btn').textContent = 'File entry';
+  document.getElementById('car-delete-btn').style.display = 'none';
+  renderCarExistingPreviews();
+}
+function setCarEditMode(c) {
+  carEditingId = c.id;
+  carExistingUrls = Array.isArray(c.image_urls) ? [...c.image_urls] : [];
+  document.getElementById('car-form-title-text').textContent = 'Edit entry';
+  document.getElementById('car-form-section-label').textContent = 'Edit entry';
+  document.getElementById('car-save-btn').textContent = 'Save changes';
+  document.getElementById('car-delete-btn').style.display = 'block';
+  toggleCarForm(true);
+  document.getElementById('cf-url').value          = c.url || '';
+  document.getElementById('cf-name').value         = c.name || '';
+  document.getElementById('cf-company').value      = c.company || '';
+  document.getElementById('cf-price').value        = c.price_total || '';
+  document.getElementById('cf-pickup-date').value  = c.pickup_date || '';
+  document.getElementById('cf-pickup-time').value  = c.pickup_time || '';
+  document.getElementById('cf-dropoff-date').value = c.dropoff_date || '';
+  document.getElementById('cf-dropoff-time').value = c.dropoff_time || '';
+  document.getElementById('cf-highlights').value   = c.highlights || '';
+  document.getElementById('cf-notes').value        = c.notes || '';
+  renderCarExistingPreviews();
+  renderCarNewPreviews();
+  document.getElementById('car-form-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function cancelCarEdit() { clearCarForm(); setCarAddMode(); }
+function clearCarForm() {
+  ['cf-url','cf-name','cf-company','cf-price','cf-pickup-time','cf-dropoff-time','cf-highlights','cf-notes']
+    .forEach(id => document.getElementById(id).value = '');
+  document.getElementById('cf-pickup-date').value  = '2026-09-01';
+  document.getElementById('cf-dropoff-date').value = '2026-09-06';
+  carPendingFiles.forEach(p => URL.revokeObjectURL(p.objectUrl));
+  carPendingFiles = []; carExistingUrls = [];
+  renderCarNewPreviews(); renderCarExistingPreviews();
+  document.getElementById('car-upload-progress').textContent = '';
+  document.getElementById('car-notices').innerHTML = '';
+}
+function carNotice(msg, type) {
+  const el = document.createElement('div');
+  el.className = 'notice ' + type;
+  el.innerHTML = `<span>${msg}</span><button class="notice-close" onclick="this.parentElement.remove()">×</button>`;
+  document.getElementById('car-notices').appendChild(el);
+}
+
+// ── CARS — IMAGES ──
+function carPreviewImages(e) {
+  const allowed = Array.from(e.target.files).filter(f=>f.type.startsWith('image/')).slice(0, 8 - carPendingFiles.length - carExistingUrls.length);
+  allowed.forEach(f => carPendingFiles.push({ file: f, objectUrl: URL.createObjectURL(f) }));
+  renderCarNewPreviews(); e.target.value = '';
+}
+function renderCarNewPreviews() {
+  document.getElementById('car-file-previews').innerHTML = carPendingFiles.map((p,i) =>
+    `<div class="file-thumb"><img src="${p.objectUrl}"/><button class="file-thumb-remove" onclick="removeCarNewFile(${i})">x</button></div>`).join('');
+}
+function renderCarExistingPreviews() {
+  document.getElementById('car-existing-previews').innerHTML = carExistingUrls.map((u,i) =>
+    `<div class="existing-thumb"><img src="${esc(u)}"/><button class="existing-thumb-remove" onclick="removeCarExistingUrl(${i})">x</button></div>`).join('');
+}
+function removeCarNewFile(i) { URL.revokeObjectURL(carPendingFiles[i].objectUrl); carPendingFiles.splice(i,1); renderCarNewPreviews(); }
+function removeCarExistingUrl(i) { carExistingUrls.splice(i,1); renderCarExistingPreviews(); }
+
+async function uploadCarImages(carId) {
+  const urls = [];
+  for (let i = 0; i < carPendingFiles.length; i++) {
+    const { file } = carPendingFiles[i];
+    document.getElementById('car-upload-progress').textContent = `Uploading photo ${i+1}/${carPendingFiles.length}...`;
+    const ext = file.name.split('.').pop() || 'jpg';
+    const path = `cars/${carId}/${Date.now()}_${i}.${ext}`;
+    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${path}`, {
+      method: 'POST', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': file.type, 'x-upsert': 'true' }, body: file
+    });
+    if (res.ok) urls.push(`${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`);
+    else carNotice('Photo upload failed: ' + res.status, 'err');
+  }
+  document.getElementById('car-upload-progress').textContent = '';
+  return urls;
+}
+
+// ── CARS — CRUD ──
+async function saveCarListing() {
+  document.getElementById('car-notices').innerHTML = '';
+  const name = document.getElementById('cf-name').value.trim();
+  if (!name) { carNotice('Car name is required.', 'warn'); return; }
+  const btn = document.getElementById('car-save-btn');
+  btn.disabled = true;
+  const currentId = carEditingId;
+  try {
+    const price = document.getElementById('cf-price').value.trim();
+    const payload = {
+      url:          document.getElementById('cf-url').value.trim() || null,
+      name,
+      company:      document.getElementById('cf-company').value.trim() || null,
+      price_total:  price ? parseFloat(price.replace(/,/g,'')) : null,
+      price_currency: 'EUR',
+      pickup_date:  document.getElementById('cf-pickup-date').value || null,
+      pickup_time:  document.getElementById('cf-pickup-time').value.trim() || null,
+      dropoff_date: document.getElementById('cf-dropoff-date').value || null,
+      dropoff_time: document.getElementById('cf-dropoff-time').value.trim() || null,
+      highlights:   document.getElementById('cf-highlights').value.trim() || null,
+      notes:        document.getElementById('cf-notes').value.trim() || null,
+      added_by:     getMyName() || 'Anonymous',
+    };
+    let carId = currentId;
+    if (!currentId) {
+      payload.image_urls = [];
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/car_rentals`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=representation' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const [row] = await res.json(); carId = row.id;
+    }
+    const newUrls = carPendingFiles.length > 0 ? await uploadCarImages(carId) : [];
+    const allUrls = [...carExistingUrls, ...newUrls];
+    const finalPayload = currentId ? { ...payload, image_urls: allUrls } : { image_urls: allUrls };
+    const saveRes = await fetch(`${SUPABASE_URL}/rest/v1/car_rentals?id=eq.${carId}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=representation' },
+      body: JSON.stringify(finalPayload)
+    });
+    if (!saveRes.ok) throw new Error(await saveRes.text());
+    clearCarForm(); setCarAddMode(); await loadCars();
+  } catch(e) { carNotice('Could not save: ' + e.message, 'err'); }
+  finally { btn.disabled = false; }
+}
+async function deleteCarListing() {
+  if (!carEditingId) return;
+  if (!confirm('Delete this car rental?')) return;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/car_rentals?id=eq.${carEditingId}`, {
+      method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    if (!res.ok) throw new Error(await res.text());
+    clearCarForm(); setCarAddMode(); await loadCars();
+  } catch(e) { carNotice('Could not delete: ' + e.message, 'err'); }
+}
+
+// ── CARS — BOARD ──
+async function loadCars() {
+  try {
+    const [carsRes, cmtRes] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/car_rentals?order=votes.desc.nullsfirst,created_at.desc&limit=100`, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }),
+      fetch(`${SUPABASE_URL}/rest/v1/car_comments?order=created_at.asc&limit=2000`, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } })
+    ]);
+    if (!carsRes.ok) throw new Error(await carsRes.text());
+    const rows = await carsRes.json();
+    const allCmts = cmtRes.ok ? await cmtRes.json() : [];
+    const cmtMap = {};
+    allCmts.forEach(c => (cmtMap[c.car_id] = cmtMap[c.car_id] || []).push(c));
+    window._carCmtMap = cmtMap;
+    renderCars(rows, cmtMap);
+  } catch(e) { console.error('Cars load failed:', e); }
+}
+function renderCars(rows, cmtMap) {
+  cmtMap = cmtMap || window._carCmtMap || {};
+  const empty = document.getElementById('car-board-empty');
+  const cards = document.getElementById('car-board-cards');
+  const count = document.getElementById('car-board-count');
+  if (!rows || !rows.length) { empty.style.display = 'block'; cards.innerHTML = ''; count.textContent = ''; return; }
+  empty.style.display = 'none';
+  count.textContent = rows.length + (rows.length !== 1 ? ' options' : ' option');
+  cards.innerHTML = rows.map((c, ci) => {
+    const pp   = c.price_total ? Math.round(c.price_total / people) : null;
+    const imgs = Array.isArray(c.image_urls) ? c.image_urls : [];
+    const tags = c.highlights ? c.highlights.split(',').map(s=>s.trim()).filter(Boolean) : [];
+    const cmts = cmtMap[c.id] || [];
+    const myVote = (getCarVotes())[c.id] || 0;
+    const scoreClass = (c.votes||0) > 0 ? 'positive' : (c.votes||0) < 0 ? 'negative' : '';
+    const cmtLabel = cmts.length ? `Discussion (${cmts.length})` : 'Discussion';
+    const isExpanded = carExpanded.has(c.id);
+    const carouselHtml = imgs.length
+      ? `<div class="carousel" id="ccar-${ci}">
+          <div class="carousel-track" id="ctrack-${ci}">${imgs.map(u=>`<img src="${esc(u)}" alt="" loading="lazy"/>`).join('')}</div>
+          ${imgs.length > 1 ? `<button class="carousel-btn prev" onclick="slideC(event,${ci},-1)">&#8249;</button><button class="carousel-btn next" onclick="slideC(event,${ci},1)">&#8250;</button>
+          <div class="carousel-dots" id="cdots-${ci}">${imgs.map((_,i)=>`<div class="carousel-dot${i===0?' active':''}" id="cdot-${ci}-${i}"></div>`).join('')}</div>` : ''}
+        </div>`
+      : `<div class="no-photos">No photos</div>`;
+    const pickupStr = [c.pickup_date ? fmtDate(c.pickup_date) : '', c.pickup_time].filter(Boolean).join(' · ');
+    const dropoffStr = [c.dropoff_date ? fmtDate(c.dropoff_date) : '', c.dropoff_time].filter(Boolean).join(' · ');
+    return `
+    <div class="listing-card${c.url?' card-clickable':''}" data-id="${esc(c.id)}" onclick="openListing(event,'${esc(c.url||'')}')">
+      <div>${carouselHtml}</div>
+      <div class="card-hero" onclick="event.stopPropagation()">
+        <div>
+          ${pp ? `<div style="display:flex;align-items:baseline;gap:5px;"><span class="card-price-main">&euro;${pp.toLocaleString()}</span><span class="card-price-label">/person</span></div>` : '<div class="card-price-main">—</div>'}
+          <div class="card-price-subs">${c.price_total ? `&euro;${Math.round(c.price_total).toLocaleString()} total` : ''}</div>
+        </div>
+        <div class="card-hero-votes">
+          <button class="vote-btn ${myVote===1?'voted-up':''}" onclick="voteCar(event,'${c.id}',1)">Like</button>
+          <span class="vote-score ${scoreClass}">${c.votes||0}</span>
+          <button class="vote-btn ${myVote===-1?'voted-down':''}" onclick="voteCar(event,'${c.id}',-1)">Dislike</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${esc(c.name)}</div>
+        ${c.company ? `<div class="card-loc">${esc(c.company)}</div>` : ''}
+        ${(pickupStr||dropoffStr) ? `<div class="card-dates">${pickupStr}${pickupStr&&dropoffStr?' &rarr; ':''}${dropoffStr}</div>` : ''}
+        ${tags.length ? `<div class="card-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+        ${c.notes ? `<div class="card-notes">${esc(c.notes)}</div>` : ''}
+        <div class="card-footer">
+          <span>${c.added_by && c.added_by!=='Anonymous' ? 'Added by '+esc(c.added_by) : timeAgo(c.created_at)}</span>
+          <div class="card-actions">
+            <button class="card-edit-btn" onclick="startCarEdit(event,'${esc(c.id)}')">Edit</button>
+            ${c.url ? `<span class="card-link" onclick="openListing(event,'${esc(c.url)}')">Open link &rarr;</span>` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="card-comments" onclick="event.stopPropagation()">
+        <div class="comments-toggle-bar" id="cchead-${c.id}" onclick="toggleCarComments('${c.id}')">
+          <span class="comments-label">${cmtLabel}</span>
+          <button class="comments-showhide" id="cctoggle-${c.id}">${isExpanded?'hide':'show'}</button>
+        </div>
+        <div class="comments-body" id="ccbody-${c.id}" style="${isExpanded?'':'display:none'}">
+          ${carCommentsBodyHtml(c.id, cmts)}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  rows.forEach((_,ci) => carCarIdx[ci] = 0);
+  window._carRows = rows;
+}
+function startCarEdit(e, id) {
+  e.stopPropagation();
+  const row = (window._carRows||[]).find(r=>r.id===id);
+  if (row) setCarEditMode(row);
+}
+
+// ── CARS — CAROUSEL ──
+const carCarIdx = {};
+function slideC(e, ci, dir) {
+  e.stopPropagation();
+  const track = document.getElementById(`ctrack-${ci}`);
+  if (!track) return;
+  const total = track.children.length;
+  carCarIdx[ci] = (carCarIdx[ci] + dir + total) % total;
+  track.style.transform = `translateX(-${carCarIdx[ci]*100}%)`;
+  document.querySelectorAll(`[id^="cdot-${ci}-"]`).forEach((d,i)=>d.classList.toggle('active',i===carCarIdx[ci]));
+}
+
+// ── CARS — VOTES ──
+async function voteCar(e, id, dir) {
+  e.stopPropagation();
+  const votes = getCarVotes();
+  const current = votes[id] || 0;
+  const newDir = current === dir ? 0 : dir;
+  const delta  = newDir - current;
+  if (delta === 0) return;
+  votes[id] = newDir === 0 ? undefined : newDir;
+  if (!votes[id]) delete votes[id];
+  saveCarVotes(votes);
+  const row = (window._carRows||[]).find(r=>r.id===id);
+  if (row) { row.votes = (row.votes||0) + delta; renderCars(window._carRows, window._carCmtMap); }
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_car_votes`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
+      body: JSON.stringify({ p_car_id: id, delta })
+    });
+  } catch(e) { console.error('Car vote failed', e); }
+}
+
+// ── CARS — COMMENTS ──
+function carCommentHtml(c, carId) {
+  const isOwn = getMyName() && getMyName() === c.author;
+  return `<div class="comment-item" id="carcitem-${c.id}">
+    <div class="comment-meta">
+      <span><strong>${esc(c.author)}</strong> &middot; ${timeAgo(c.created_at)}</span>
+      ${isOwn ? `<span class="comment-actions">
+        <button class="comment-action-btn" onclick="editCarComment('${c.id}','${esc(carId)}')">edit</button>
+        <button class="comment-action-btn" onclick="deleteCarComment('${c.id}','${esc(carId)}')">delete</button>
+      </span>` : ''}
+    </div>
+    <div class="comment-text" id="carct-${c.id}" data-body="${esc(c.body)}">${esc(c.body)}</div>
+  </div>`;
+}
+function carCommentsBodyHtml(id, cmts) {
+  const list = cmts.length ? cmts.map(c=>carCommentHtml(c,id)).join('') : '<div class="no-comments">No comments yet.</div>';
+  return list + `<div class="comment-form">
+    <textarea class="comment-input" id="ccinput-${id}" placeholder="Add a comment… (⌘↵ to post)"
+      onkeydown="carCommentKeydown(event,'${id}')"></textarea>
+    <button class="comment-submit" onclick="postCarComment('${id}')">Post</button>
+  </div>`;
+}
+function carCommentKeydown(e, id) { if ((e.metaKey||e.ctrlKey)&&e.key==='Enter'){e.preventDefault();postCarComment(id);} }
+function toggleCarComments(id) {
+  const body = document.getElementById(`ccbody-${id}`);
+  const btn  = document.getElementById(`cctoggle-${id}`);
+  if (!body) return;
+  if (carExpanded.has(id)) { carExpanded.delete(id); body.style.display='none'; if(btn) btn.textContent='show'; }
+  else { carExpanded.add(id); body.style.display=''; if(btn) btn.textContent='hide'; }
+}
+async function postCarComment(carId) {
+  const name = getMyName();
+  if (!name) { editName(); document.getElementById('identity-bar').scrollIntoView({behavior:'smooth',block:'nearest'}); return; }
+  const input = document.getElementById(`ccinput-${carId}`);
+  const body  = input ? input.value.trim() : '';
+  if (!body) return;
+  const btn = input.closest('.comment-form').querySelector('.comment-submit');
+  btn.disabled = true; input.disabled = true;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/car_comments`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ car_id: carId, author: name, body })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    input.value = ''; await refreshCarComments(carId);
+  } catch(e) { console.error('Car comment failed', e); }
+  finally { btn.disabled=false; input.disabled=false; }
+}
+async function refreshCarComments(carId) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/car_comments?car_id=eq.${carId}&order=created_at.asc`, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
+  if (!res.ok) return;
+  const cmts = await res.json();
+  if (window._carCmtMap) window._carCmtMap[carId] = cmts;
+  const bodyEl = document.getElementById(`ccbody-${carId}`);
+  if (bodyEl) { bodyEl.innerHTML = carCommentsBodyHtml(carId, cmts); if (!carExpanded.has(carId)) bodyEl.style.display='none'; }
+  const label = document.querySelector(`#cchead-${carId} .comments-label`);
+  if (label) label.textContent = cmts.length ? `Discussion (${cmts.length})` : 'Discussion';
+}
+async function deleteCarComment(commentId, carId) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/car_comments?id=eq.${commentId}`, { method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
+  if (res.ok) await refreshCarComments(carId);
+}
+function editCarComment(commentId, carId) {
+  const textEl = document.getElementById(`carct-${commentId}`);
+  if (!textEl) return;
+  const ccbody = document.getElementById(`ccbody-${carId}`);
+  const form = ccbody ? ccbody.querySelector('.comment-form') : null;
+  if (form) form.style.display = 'none';
+  const body = textEl.dataset.body || '';
+  textEl.innerHTML = `<textarea class="comment-edit-input" id="carcedit-${commentId}">${esc(body)}</textarea>
+    <div class="comment-edit-btns">
+      <button class="comment-action-btn" onclick="saveCarCommentEdit('${commentId}','${carId}')">Save</button>
+      <button class="comment-action-btn" onclick="refreshCarComments('${carId}')">Cancel</button>
+    </div>`;
+  const ta = document.getElementById(`barcedit-${commentId}`);
+  if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); }
+}
+async function saveCarCommentEdit(commentId, carId) {
+  const ta = document.getElementById(`barcedit-${commentId}`) || document.getElementById(`carcedit-${commentId}`);
+  const newBody = ta ? ta.value.trim() : '';
+  if (!newBody) return;
+  if (ta) ta.disabled = true;
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/car_comments?id=eq.${commentId}`, {
+    method: 'PATCH', headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=minimal' },
+    body: JSON.stringify({ body: newBody })
+  });
+  if (res.ok) await refreshCarComments(carId);
+  else if (ta) ta.disabled = false;
+}
+
+// ── HELPERS (cars) ──
+function fmtDate(d) { if (!d) return ''; const [y,m,dy]=d.split('-'); return `${dy}/${m}/${y}`; }
+
 // ── INIT ──
 setAddMode();
+setCarAddMode();
 renderIdentityBar();
 loadBoard();
 setInterval(loadBoard, 30000);
