@@ -229,6 +229,19 @@
   .identity-input { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink); background: transparent; border: none; border-bottom: 1px solid var(--rule); border-radius: 0; outline: none; padding: 1px 0; width: 150px; letter-spacing: 0.05em; }
   .identity-input:focus { border-bottom-color: var(--stamp); }
 
+  /* ── People settings ── */
+  .settings-people { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+  .settings-people-btn { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--muted); background: none; border: none; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .settings-people-btn:hover { color: var(--stamp); border: none; background: none; }
+  .settings-people-input { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink); background: transparent; border: none; border-bottom: 1px solid var(--rule); border-radius: 0; outline: none; padding: 1px 0; width: 32px; text-align: center; letter-spacing: 0.05em; -moz-appearance: textfield; }
+  .settings-people-input:focus { border-bottom-color: var(--stamp); }
+  .settings-people-input::-webkit-outer-spin-button,
+  .settings-people-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  /* ── Last updated ── */
+  .last-updated { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.04em; }
+  .last-updated.stale { color: var(--stamp); }
+
   /* ── Comments ── */
   .card-comments { border-top: 1px solid var(--rule); }
   .comments-toggle-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; cursor: pointer; user-select: none; }
@@ -308,6 +321,7 @@
         <option value="">All locations</option>
       </select>
       <button class="text-btn" onclick="loadBoard()">Reload</button>
+      <span class="last-updated" id="stays-last-updated"></span>
       <button class="btn-primary form-open-btn" onclick="openFormOverlay('stays')">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Добави
@@ -333,6 +347,7 @@
           <option value="">All locations</option>
         </select>
         <button class="text-btn" onclick="loadCars()">Reload</button>
+        <span class="last-updated" id="cars-last-updated"></span>
         <button class="btn-primary form-open-btn" onclick="openFormOverlay('cars')">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Добави
@@ -478,7 +493,7 @@
 const SUPABASE_URL = 'https://ntobxxiplcamwbfeirno.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50b2J4eGlwbGNhbXdiZmVpcm5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMTA3MTcsImV4cCI6MjA5NTg4NjcxN30.PvKU4CETydg-c2sS53tYvBNrK8rGmohr0c4EJRjeM0c';
 const BUCKET = 'listing-images';
-const people = 8, nights = 7;
+const people = 8;
 
 let pendingFiles  = [];
 const VOTES_KEY = 'trip_planner_votes';
@@ -486,6 +501,35 @@ const NAME_KEY  = 'trip_commenter_name';
 let existingUrls  = [];
 let editingId     = null;
 const expandedComments = new Set();
+
+// ── PEOPLE SETTINGS ──
+const PEOPLE_KEY = 'trip_people';
+function getTripPeople() { return parseInt(localStorage.getItem(PEOPLE_KEY) || '8', 10) || 8; }
+function setTripPeople(n) {
+  if (n && n > 0) localStorage.setItem(PEOPLE_KEY, String(n));
+  renderIdentityBar();
+  applyStaysFilter();
+  applyCarsFilter();
+}
+function editPeople() {
+  const bar = document.getElementById('identity-bar');
+  if (!bar) return;
+  const prev = getTripPeople();
+  const name = getMyName();
+  const nameHtml = name
+    ? `Commenting as: <strong>${esc(name)}</strong> &middot; <button class="identity-edit" onclick="editName()">edit</button>`
+    : `Set your name to comment &middot; <button class="identity-edit" onclick="editName()">add name</button>`;
+  bar.innerHTML = nameHtml + `<span class="settings-people">⚙ <input class="settings-people-input" id="people-input" type="number" value="${prev}" min="1" max="50" /> people <span style="font-size:11px;color:var(--muted)">↵</span></span>`;
+  const inp = document.getElementById('people-input');
+  inp.focus(); inp.select();
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); setTripPeople(parseInt(inp.value, 10)); }
+    if (e.key === 'Escape') renderIdentityBar();
+  });
+  inp.addEventListener('blur', () => setTimeout(() => {
+    if (document.getElementById('people-input')) setTripPeople(parseInt(inp.value, 10) || prev);
+  }, 180));
+}
 
 // ── IDENTITY ──
 function getMyName() { return localStorage.getItem(NAME_KEY) || ''; }
@@ -498,11 +542,10 @@ function renderIdentityBar() {
   const bar = document.getElementById('identity-bar');
   if (!bar) return;
   const name = getMyName();
-  if (name) {
-    bar.innerHTML = `Commenting as: <strong>${esc(name)}</strong> &middot; <button class="identity-edit" onclick="editName()">edit</button>`;
-  } else {
-    bar.innerHTML = `Set your name to comment &middot; <button class="identity-edit" onclick="editName()">add name</button>`;
-  }
+  const nameHtml = name
+    ? `Commenting as: <strong>${esc(name)}</strong> &middot; <button class="identity-edit" onclick="editName()">edit</button>`
+    : `Set your name to comment &middot; <button class="identity-edit" onclick="editName()">add name</button>`;
+  bar.innerHTML = nameHtml + `<span class="settings-people"><button class="settings-people-btn" onclick="editPeople()">⚙ ${getTripPeople()} people</button></span>`;
 }
 function editName() {
   const bar = document.getElementById('identity-bar');
@@ -690,7 +733,10 @@ async function saveListing() {
   const currentEditingId = editingId; // capture before any async clears it
 
   try {
-    const price   = document.getElementById('f-price').value.trim();
+    const price    = document.getElementById('f-price').value.trim();
+    const checkin  = document.getElementById('f-checkin').value || null;
+    const checkout = document.getElementById('f-checkout').value || null;
+    const nights   = checkin && checkout ? Math.round((new Date(checkout) - new Date(checkin)) / 86400000) : null;
     const payload = {
       url:            document.getElementById('listing-url').value.trim() || null,
       name,
@@ -698,12 +744,12 @@ async function saveListing() {
       price_total:    price ? parseFloat(price.replace(/,/g, '')) : null,
       price_currency: 'EUR',
       beach_distance: document.getElementById('f-beach').value.trim() || null,
-      checkin:        document.getElementById('f-checkin').value || null,
-      checkout:       document.getElementById('f-checkout').value || null,
+      checkin,
+      checkout,
       highlights:     document.getElementById('f-highlights').value.trim() || null,
       notes:          document.getElementById('f-notes').value.trim() || null,
       added_by:       getMyName() || 'Anonymous',
-      people,
+      people:         getTripPeople(),
       nights,
     };
 
@@ -903,6 +949,7 @@ async function loadBoard() {
     window._commentMap = commentMap;
     window._allBoardRows = rows;
     renderBoard(staysLocFilter ? rows.filter(r => r.location === staysLocFilter) : rows, commentMap);
+    updateLastUpdated('stays');
   } catch(e) { console.error('Board load failed:', e); }
 }
 
@@ -919,8 +966,10 @@ function renderBoard(rows, commentMap) {
   count.textContent = rows.length + (rows.length !== 1 ? ' entries' : ' entry');
 
   cards.innerHTML = rows.map((l, li) => {
-    const pp   = l.price_total && l.people ? Math.round(l.price_total / l.people) : null;
-    const ppn  = pp && l.nights ? Math.round(pp / l.nights) : null;
+    const ppl  = getTripPeople();
+    const computedNights = l.checkin && l.checkout ? Math.round((new Date(l.checkout) - new Date(l.checkin)) / 86400000) : (l.nights || null);
+    const pp   = l.price_total ? Math.round(l.price_total / ppl) : null;
+    const ppn  = pp && computedNights ? Math.round(pp / computedNights) : null;
     const imgs = Array.isArray(l.image_urls) ? l.image_urls : [];
     const tags = [l.beach_distance, ...(l.highlights ? l.highlights.split(',').map(s=>s.trim()) : [])].filter(Boolean);
     const cmts = commentMap[l.id] || [];
@@ -951,7 +1000,7 @@ function renderBoard(rows, commentMap) {
       <div class="card-hero">
         <div>
           ${pp ? `<div style="display:flex;align-items:baseline;gap:5px;"><span class="card-price-main">&euro;${pp.toLocaleString()}</span><span class="card-price-label">/person</span></div>` : '<div class="card-price-main">—</div>'}
-          <div class="card-price-subs">${ppn ? `&euro;${ppn}/night &middot; ` : ''}${l.price_total ? `&euro;${Math.round(l.price_total).toLocaleString()} total` : ''}</div>
+          <div class="card-price-subs">${ppn ? `&euro;${ppn}/night &middot; ` : ''}${l.price_total ? `&euro;${Math.round(l.price_total).toLocaleString()} total` : ''}${pp ? ` &middot; &divide;${ppl}` : ''}</div>
         </div>
         <div class="card-hero-votes">
           <button class="vote-btn ${myVote===1?'voted-up':''}" onclick="vote(event,'${l.id}',1)">Like</button>
@@ -1357,6 +1406,7 @@ async function loadCars() {
     window._carCmtMap = cmtMap;
     window._allCarRows = rows;
     renderCars(carsLocFilter ? rows.filter(r => r.location === carsLocFilter) : rows, cmtMap);
+    updateLastUpdated('cars');
   } catch(e) { console.error('Cars load failed:', e); }
 }
 function renderCars(rows, cmtMap) {
@@ -1368,7 +1418,8 @@ function renderCars(rows, cmtMap) {
   empty.style.display = 'none';
   count.textContent = rows.length + (rows.length !== 1 ? ' options' : ' option');
   cards.innerHTML = rows.map((c, ci) => {
-    const pp   = c.price_total ? Math.round(c.price_total / people) : null;
+    const ppl  = getTripPeople();
+    const pp   = c.price_total ? Math.round(c.price_total / ppl) : null;
     const imgs = Array.isArray(c.image_urls) ? c.image_urls : [];
     const tags = c.highlights ? c.highlights.split(',').map(s=>s.trim()).filter(Boolean) : [];
     const cmts = cmtMap[c.id] || [];
@@ -1391,7 +1442,7 @@ function renderCars(rows, cmtMap) {
       <div class="card-hero">
         <div>
           ${pp ? `<div style="display:flex;align-items:baseline;gap:5px;"><span class="card-price-main">&euro;${pp.toLocaleString()}</span><span class="card-price-label">/person</span></div>` : '<div class="card-price-main">—</div>'}
-          <div class="card-price-subs">${c.price_total ? `&euro;${Math.round(c.price_total).toLocaleString()} total` : ''}</div>
+          <div class="card-price-subs">${c.price_total ? `&euro;${Math.round(c.price_total).toLocaleString()} total` : ''}${pp ? ` &middot; &divide;${ppl}` : ''}</div>
         </div>
         <div class="card-hero-votes">
           <button class="vote-btn ${myVote===1?'voted-up':''}" onclick="voteCar(event,'${c.id}',1)">Like</button>
@@ -1540,7 +1591,7 @@ function editCarComment(commentId, carId) {
       <button class="comment-action-btn" onclick="saveCarCommentEdit('${commentId}','${carId}')">Save</button>
       <button class="comment-action-btn" onclick="refreshCarComments('${carId}')">Cancel</button>
     </div>`;
-  const ta = document.getElementById(`barcedit-${commentId}`);
+  const ta = document.getElementById(`carcedit-${commentId}`);
   if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); }
 }
 async function saveCarCommentEdit(commentId, carId) {
@@ -1559,6 +1610,24 @@ async function saveCarCommentEdit(commentId, carId) {
 // ── HELPERS (cars) ──
 function fmtDate(d) { if (!d) return ''; const [y,m,dy]=d.split('-'); return `${dy}/${m}/${y}`; }
 
+// ── LAST UPDATED ──
+const lastUpdated = { stays: 0, cars: 0 };
+function updateLastUpdated(which) {
+  lastUpdated[which] = Date.now();
+  const el = document.getElementById(`${which}-last-updated`);
+  if (el) { el.textContent = 'just now'; el.classList.remove('stale'); }
+}
+function tickLastUpdated() {
+  ['stays', 'cars'].forEach(which => {
+    const el = document.getElementById(`${which}-last-updated`);
+    if (!el || !lastUpdated[which]) return;
+    const s = Math.floor((Date.now() - lastUpdated[which]) / 1000);
+    el.classList.toggle('stale', s > 120);
+    el.textContent = s < 10 ? 'just now' : s < 60 ? s + 's ago' : Math.floor(s / 60) + 'm ago';
+  });
+}
+setInterval(tickLastUpdated, 15000);
+
 // ── INIT ──
 setAddMode();
 setCarAddMode();
@@ -1566,6 +1635,7 @@ renderIdentityBar();
 loadLocations();
 loadBoard();
 setInterval(loadBoard, 30000);
+setInterval(() => { if (currentView === 'cars') loadCars(); }, 30000);
 </script>
 </body>
 </html>
