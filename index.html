@@ -160,6 +160,26 @@
   .empty-board { font-family: 'Fraunces', serif; font-style: italic; font-size: 16px; color: var(--muted); padding: 2.5rem 0; text-align: center; }
   .paste-zone { position: relative; }
 
+  /* ── Form overlay ── */
+  .form-overlay { position: fixed; inset: 0; z-index: 200; display: none; align-items: flex-end; justify-content: center; }
+  .form-overlay-bg { position: absolute; inset: 0; background: rgba(26,18,8,0.52); opacity: 0; transition: opacity 0.3s ease; }
+  .form-overlay.open .form-overlay-bg { opacity: 1; }
+  .form-sheet {
+    position: relative; z-index: 1; width: 100%; max-width: 780px;
+    background: var(--paper); border: 1.5px solid var(--rule); border-bottom: none;
+    border-radius: 10px 10px 0 0; max-height: 90vh; overflow-y: auto;
+    padding: 1.5rem 1.75rem 2.5rem;
+    transform: translateY(100%);
+    transition: transform 0.42s cubic-bezier(0.16,1,0.3,1);
+  }
+  .form-overlay.open .form-sheet { transform: translateY(0); }
+  .form-sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+  .form-sheet-title { font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 22px; color: var(--ink); }
+  .form-sheet-actions { display: flex; gap: 8px; align-items: center; }
+  .form-close-btn { background: none; border: 1px solid var(--rule); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; color: var(--ink); letter-spacing: 0; text-transform: none; flex-shrink: 0; }
+  .form-close-btn:hover { background: var(--stamp-bg); border-color: var(--stamp); color: var(--stamp); }
+  .form-open-btn { display: inline-flex; align-items: center; gap: 7px; }
+
   /* ── View switcher ── */
   .view-switcher { display: flex; align-items: center; gap: 14px; margin-bottom: 2rem; }
   .view-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); transition: color 0.2s; }
@@ -254,101 +274,19 @@
   </div>
 
   <div id="view-stays" class="view-panel">
-  <!-- FORM (add + edit) -->
-  <div class="section" id="form-section">
-    <div class="section-toggle" onclick="toggleForm()">
-      <div class="section-label" style="margin:0" id="form-section-label">New listing</div>
-      <svg class="section-toggle-chevron" id="form-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-    </div>
-    <div class="form-body" id="form-body">
-    <div class="form-card">
-      <div class="form-title">
-        <span id="form-title-text">New listing</span>
-        <button class="btn-danger" id="delete-btn" style="display:none;" onclick="deleteListing()">Discard entry</button>
-      </div>
-
-      <div class="field">
-        <label>Booking link</label>
-        <input type="url" id="listing-url" placeholder="https://www.booking.com/..." oninput="onUrlPaste()" />
-      </div>
-
-      <div class="field-row">
-        <div class="field">
-          <label>Property name</label>
-          <input type="text" id="f-name" placeholder="имито" />
-        </div>
-        <div class="field">
-          <label>Location</label>
-          <input type="text" id="f-location" placeholder="кадя" />
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field">
-          <label>Total price (EUR)</label>
-          <input type="number" id="f-price" placeholder="e.g. 1800" min="0" />
-        </div>
-        <div class="field">
-          <label>To the beach</label>
-          <input type="text" id="f-beach" placeholder="дане вървим много" />
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field">
-          <label>Check-in</label>
-          <input type="date" id="f-checkin" value="2026-09-01" />
-        </div>
-        <div class="field">
-          <label>Check-out</label>
-          <input type="date" id="f-checkout" value="2026-09-06" />
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Highlights</label>
-        <input type="text" id="f-highlights" placeholder="луксозно ми е" />
-      </div>
-
-      <div class="field">
-        <label>Notes</label>
-        <textarea id="f-notes" placeholder="тука може да капризничите"></textarea>
-      </div>
-
-      <div class="field">
-        <label>Photos &amp; screenshots</label>
-        <!-- existing images shown in edit mode -->
-        <div class="file-previews" id="existing-previews"></div>
-        <div class="paste-zone" style="margin-top:8px;">
-          <label class="file-label" for="f-images">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            Add photos or paste screenshot (Ctrl+V / Cmd+V)
-          </label>
-          <input type="file" id="f-images" accept="image/*" multiple onchange="previewImages(event)" />
-        </div>
-        <div class="file-previews" id="file-previews"></div>
-      </div>
-
-      <div class="btn-row">
-        <span class="upload-progress" id="upload-progress"></span>
-        <button onclick="cancelEdit()">Cancel</button>
-        <button class="btn-primary" id="save-btn" onclick="saveListing()">сейф</button>
-      </div>
-
-      <div id="notices"></div>
-    </div>
-    </div><!-- /form-body -->
-  </div>
-
-  <hr class="divider" />
-
   <!-- BOARD -->
   <div class="board-header">
     <div>
       <div class="section-label" style="margin:0">The contenders</div>
       <div class="board-count" id="board-count"></div>
     </div>
-    <button class="text-btn" onclick="loadBoard()">Reload</button>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="text-btn" onclick="loadBoard()">Reload</button>
+      <button class="btn-primary form-open-btn" onclick="openFormOverlay('stays')">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New entry
+      </button>
+    </div>
   </div>
 
   <div class="empty-board" id="board-empty" style="display:none;">No dispatches yet. File the first one above.</div>
@@ -359,109 +297,129 @@
   <!-- CARS VIEW -->
   <div id="view-cars" class="view-panel" style="display:none">
 
-    <div class="section" id="car-form-section">
-      <div class="section-toggle" onclick="toggleCarForm()">
-        <div class="section-label" style="margin:0" id="car-form-section-label">New entry</div>
-        <svg class="section-toggle-chevron" id="car-form-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-      </div>
-      <div class="form-body" id="car-form-body">
-      <div class="form-card">
-        <div class="form-title">
-          <span id="car-form-title-text">New entry</span>
-          <button class="btn-danger" id="car-delete-btn" style="display:none;" onclick="deleteCarListing()">Discard entry</button>
-        </div>
-
-        <div class="field">
-          <label>Rental URL <span>(paste to auto-fill dates)</span></label>
-          <input type="url" id="cf-url" placeholder="https://www.rentacar-rhodes.com/..." oninput="onCarUrlPaste()" />
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label>Car / Model *</label>
-            <input type="text" id="cf-name" placeholder="Bugatti" />
-          </div>
-          <div class="field">
-            <label>Company</label>
-            <input type="text" id="cf-company" placeholder="най-големите цигани" />
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Total price (EUR)</label>
-          <input type="number" id="cf-price" placeholder="пара" min="0" />
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label>Pickup date</label>
-            <input type="date" id="cf-pickup-date" value="2026-09-01" />
-          </div>
-          <div class="field">
-            <label>Pickup time</label>
-            <input type="text" id="cf-pickup-time" placeholder="16:30" />
-          </div>
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label>Dropoff date</label>
-            <input type="date" id="cf-dropoff-date" value="2026-09-06" />
-          </div>
-          <div class="field">
-            <label>Dropoff time</label>
-            <input type="text" id="cf-dropoff-time" placeholder="14:00" />
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Highlights</label>
-          <input type="text" id="cf-highlights" placeholder="жипиес" />
-        </div>
-
-        <div class="field">
-          <label>Notes</label>
-          <textarea id="cf-notes" placeholder=""></textarea>
-        </div>
-
-        <div class="field">
-          <label>Photos &amp; screenshots</label>
-          <div class="file-previews" id="car-existing-previews"></div>
-          <div class="paste-zone" style="margin-top:8px;">
-            <label class="file-label" for="cf-images">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              Add photos or paste screenshot (Ctrl+V / Cmd+V)
-            </label>
-            <input type="file" id="cf-images" accept="image/*" multiple onchange="carPreviewImages(event)" />
-          </div>
-          <div class="file-previews" id="car-file-previews"></div>
-        </div>
-
-        <div class="btn-row">
-          <span class="upload-progress" id="car-upload-progress"></span>
-          <button onclick="cancelCarEdit()">Cancel</button>
-          <button class="btn-primary" id="car-save-btn" onclick="saveCarListing()">сейф</button>
-        </div>
-        <div id="car-notices"></div>
-      </div>
-      </div><!-- /car-form-body -->
-    </div>
-
-    <hr class="divider" />
-
     <div class="board-header">
       <div>
         <div class="section-label" style="margin:0">On the road</div>
         <div class="board-count" id="car-board-count"></div>
       </div>
-      <button class="text-btn" onclick="loadCars()">Reload</button>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button class="text-btn" onclick="loadCars()">Reload</button>
+        <button class="btn-primary form-open-btn" onclick="openFormOverlay('cars')">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New entry
+        </button>
+      </div>
     </div>
     <div class="empty-board" id="car-board-empty" style="display:none;">No rentals yet. File the first one above.</div>
     <div id="car-board-cards"></div>
 
   </div><!-- /view-cars -->
 
+</div><!-- /.page -->
+
+<!-- ── STAYS OVERLAY ── -->
+<div class="form-overlay" id="overlay-stays">
+  <div class="form-overlay-bg" onclick="closeFormOverlay('stays')"></div>
+  <div class="form-sheet">
+    <div class="form-sheet-header">
+      <span class="form-sheet-title" id="form-title-text">New entry</span>
+      <div class="form-sheet-actions">
+        <button class="btn-danger" id="delete-btn" style="display:none;" onclick="deleteListing()">Discard entry</button>
+        <button class="form-close-btn" onclick="closeFormOverlay('stays')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Booking link <span>(tap the card to open it)</span></label>
+      <input type="url" id="listing-url" placeholder="https://www.booking.com/..." oninput="onUrlPaste()" />
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Property name</label><input type="text" id="f-name" placeholder="e.g. Villa Sunrise" /></div>
+      <div class="field"><label>Location</label><input type="text" id="f-location" placeholder="e.g. Halkidiki, Greece" /></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Total price (EUR)</label><input type="number" id="f-price" placeholder="e.g. 1800" min="0" /></div>
+      <div class="field"><label>To the beach</label><input type="text" id="f-beach" placeholder="e.g. 200m walk" /></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Check-in</label><input type="date" id="f-checkin" value="2026-09-01" /></div>
+      <div class="field"><label>Check-out</label><input type="date" id="f-checkout" value="2026-09-06" /></div>
+    </div>
+    <div class="field"><label>Highlights</label><input type="text" id="f-highlights" placeholder="e.g. pool, A/C, free parking" /></div>
+    <div class="field"><label>Notes</label><textarea id="f-notes" placeholder="Anything worth mentioning..."></textarea></div>
+    <div class="field">
+      <label>Photos &amp; screenshots</label>
+      <div class="file-previews" id="existing-previews"></div>
+      <div class="paste-zone" style="margin-top:8px;">
+        <label class="file-label" for="f-images">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Add photos or paste screenshot (Ctrl+V / Cmd+V)
+        </label>
+        <input type="file" id="f-images" accept="image/*" multiple onchange="previewImages(event)" />
+      </div>
+      <div class="file-previews" id="file-previews"></div>
+    </div>
+    <div class="btn-row">
+      <span class="upload-progress" id="upload-progress"></span>
+      <button onclick="cancelEdit()">Cancel</button>
+      <button class="btn-primary" id="save-btn" onclick="saveListing()">File entry</button>
+    </div>
+    <div id="notices"></div>
+  </div>
 </div>
+
+<!-- ── CARS OVERLAY ── -->
+<div class="form-overlay" id="overlay-cars">
+  <div class="form-overlay-bg" onclick="closeFormOverlay('cars')"></div>
+  <div class="form-sheet">
+    <div class="form-sheet-header">
+      <span class="form-sheet-title" id="car-form-title-text">New entry</span>
+      <div class="form-sheet-actions">
+        <button class="btn-danger" id="car-delete-btn" style="display:none;" onclick="deleteCarListing()">Discard entry</button>
+        <button class="form-close-btn" onclick="closeFormOverlay('cars')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Rental URL <span>(paste to auto-fill dates)</span></label>
+      <input type="url" id="cf-url" placeholder="https://www.rentacar-rhodes.com/..." oninput="onCarUrlPaste()" />
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Car / Model</label><input type="text" id="cf-name" placeholder="e.g. Toyota Yaris" /></div>
+      <div class="field"><label>Company</label><input type="text" id="cf-company" placeholder="e.g. Rentacar Rhodes" /></div>
+    </div>
+    <div class="field"><label>Total price (EUR)</label><input type="number" id="cf-price" placeholder="e.g. 280" min="0" /></div>
+    <div class="field-row">
+      <div class="field"><label>Pickup date</label><input type="date" id="cf-pickup-date" value="2026-09-01" /></div>
+      <div class="field"><label>Pickup time</label><input type="text" id="cf-pickup-time" placeholder="16:30" /></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Dropoff date</label><input type="date" id="cf-dropoff-date" value="2026-09-06" /></div>
+      <div class="field"><label>Dropoff time</label><input type="text" id="cf-dropoff-time" placeholder="14:00" /></div>
+    </div>
+    <div class="field"><label>Highlights</label><input type="text" id="cf-highlights" placeholder="e.g. AC, automatic, GPS" /></div>
+    <div class="field"><label>Notes</label><textarea id="cf-notes" placeholder="Anything worth mentioning..."></textarea></div>
+    <div class="field">
+      <label>Photos &amp; screenshots</label>
+      <div class="file-previews" id="car-existing-previews"></div>
+      <div class="paste-zone" style="margin-top:8px;">
+        <label class="file-label" for="cf-images">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Add photos or paste screenshot (Ctrl+V / Cmd+V)
+        </label>
+        <input type="file" id="cf-images" accept="image/*" multiple onchange="carPreviewImages(event)" />
+      </div>
+      <div class="file-previews" id="car-file-previews"></div>
+    </div>
+    <div class="btn-row">
+      <span class="upload-progress" id="car-upload-progress"></span>
+      <button onclick="cancelCarEdit()">Cancel</button>
+      <button class="btn-primary" id="car-save-btn" onclick="saveCarListing()">File entry</button>
+    </div>
+    <div id="car-notices"></div>
+  </div>
+</div>
+
 <script>
 const SUPABASE_URL = 'https://ntobxxiplcamwbfeirno.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50b2J4eGlwbGNhbXdiZmVpcm5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMTA3MTcsImV4cCI6MjA5NTg4NjcxN30.PvKU4CETydg-c2sS53tYvBNrK8rGmohr0c4EJRjeM0c';
@@ -508,15 +466,22 @@ function editName() {
   }, 180));
 }
 
-// ── FORM COLLAPSE ──
-function toggleForm(forceOpen) {
-  const body    = document.getElementById('form-body');
-  const chevron = document.getElementById('form-chevron');
-  const isCollapsed = body.classList.contains('collapsed');
-  const open = forceOpen !== undefined ? forceOpen : isCollapsed;
-  body.classList.toggle('collapsed', !open);
-  chevron.style.transform = open ? '' : 'rotate(180deg)';
+// ── FORM OVERLAY ──
+function openFormOverlay(which) {
+  const el = document.getElementById(`overlay-${which}`);
+  el.style.display = 'flex';
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('open')));
+  document.body.style.overflow = 'hidden';
 }
+function closeFormOverlay(which) {
+  const el = document.getElementById(`overlay-${which}`);
+  el.classList.remove('open');
+  el.addEventListener('transitionend', () => { el.style.display = 'none'; }, { once: true });
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeFormOverlay('stays'); closeFormOverlay('cars'); }
+});
 
 // ── URL PASTE HELPER ──
 function onUrlPaste() {
@@ -577,8 +542,7 @@ function setAddMode() {
   editingId = null;
   existingUrls = [];
   document.getElementById('form-title-text').textContent = 'New entry';
-  document.getElementById('form-section-label').textContent = 'New entry';
-  document.getElementById('save-btn').textContent = 'сейф';
+  document.getElementById('save-btn').textContent = 'File entry';
   document.getElementById('delete-btn').style.display = 'none';
   renderExistingPreviews();
 }
@@ -586,13 +550,9 @@ function setAddMode() {
 function setEditMode(l) {
   editingId = l.id;
   existingUrls = Array.isArray(l.image_urls) ? [...l.image_urls] : [];
-
   document.getElementById('form-title-text').textContent = 'Edit entry';
-  document.getElementById('form-section-label').textContent = 'Edit entry';
   document.getElementById('save-btn').textContent = 'Save changes';
   document.getElementById('delete-btn').style.display = 'block';
-  toggleForm(true);
-
   document.getElementById('listing-url').value  = l.url || '';
   document.getElementById('f-name').value        = l.name || '';
   document.getElementById('f-location').value    = l.location || '';
@@ -602,17 +562,15 @@ function setEditMode(l) {
   document.getElementById('f-checkout').value    = l.checkout || '';
   document.getElementById('f-highlights').value  = l.highlights || '';
   document.getElementById('f-notes').value       = l.notes || '';
-
   renderExistingPreviews();
   renderNewPreviews();
-
-  // scroll to form
-  document.getElementById('form-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  openFormOverlay('stays');
 }
 
 function cancelEdit() {
   clearForm();
   setAddMode();
+  closeFormOverlay('stays');
 }
 
 function clearForm() {
@@ -725,6 +683,7 @@ async function saveListing() {
 
     clearForm();
     setAddMode();
+    closeFormOverlay('stays');
     await loadBoard();
   } catch(e) {
     console.error(e);
@@ -746,6 +705,7 @@ async function deleteListing() {
     if (!res.ok) throw new Error(await res.text());
     clearForm();
     setAddMode();
+    closeFormOverlay('stays');
     await loadBoard();
   } catch(e) {
     notice('Could not delete: ' + e.message, 'err');
@@ -1106,8 +1066,7 @@ function toggleCarForm(forceOpen) {
 function setCarAddMode() {
   carEditingId = null; carExistingUrls = [];
   document.getElementById('car-form-title-text').textContent = 'New entry';
-  document.getElementById('car-form-section-label').textContent = 'New entry';
-  document.getElementById('car-save-btn').textContent = 'сейф';
+  document.getElementById('car-save-btn').textContent = 'File entry';
   document.getElementById('car-delete-btn').style.display = 'none';
   renderCarExistingPreviews();
 }
@@ -1115,10 +1074,8 @@ function setCarEditMode(c) {
   carEditingId = c.id;
   carExistingUrls = Array.isArray(c.image_urls) ? [...c.image_urls] : [];
   document.getElementById('car-form-title-text').textContent = 'Edit entry';
-  document.getElementById('car-form-section-label').textContent = 'Edit entry';
   document.getElementById('car-save-btn').textContent = 'Save changes';
   document.getElementById('car-delete-btn').style.display = 'block';
-  toggleCarForm(true);
   document.getElementById('cf-url').value          = c.url || '';
   document.getElementById('cf-name').value         = c.name || '';
   document.getElementById('cf-company').value      = c.company || '';
@@ -1131,9 +1088,9 @@ function setCarEditMode(c) {
   document.getElementById('cf-notes').value        = c.notes || '';
   renderCarExistingPreviews();
   renderCarNewPreviews();
-  document.getElementById('car-form-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  openFormOverlay('cars');
 }
-function cancelCarEdit() { clearCarForm(); setCarAddMode(); }
+function cancelCarEdit() { clearCarForm(); setCarAddMode(); closeFormOverlay('cars'); }
 function clearCarForm() {
   ['cf-url','cf-name','cf-company','cf-price','cf-pickup-time','cf-dropoff-time','cf-highlights','cf-notes']
     .forEach(id => document.getElementById(id).value = '');
@@ -1228,7 +1185,7 @@ async function saveCarListing() {
       body: JSON.stringify(finalPayload)
     });
     if (!saveRes.ok) throw new Error(await saveRes.text());
-    clearCarForm(); setCarAddMode(); await loadCars();
+    clearCarForm(); setCarAddMode(); closeFormOverlay('cars'); await loadCars();
   } catch(e) { carNotice('Could not save: ' + e.message, 'err'); }
   finally { btn.disabled = false; }
 }
@@ -1240,7 +1197,7 @@ async function deleteCarListing() {
       method: 'DELETE', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
     });
     if (!res.ok) throw new Error(await res.text());
-    clearCarForm(); setCarAddMode(); await loadCars();
+    clearCarForm(); setCarAddMode(); closeFormOverlay('cars'); await loadCars();
   } catch(e) { carNotice('Could not delete: ' + e.message, 'err'); }
 }
 
