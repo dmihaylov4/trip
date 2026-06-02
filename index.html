@@ -166,7 +166,17 @@
   .view-label.active { color: var(--ink); font-weight: 500; }
   .view-spin-btn { background: var(--card); border: 1px solid var(--rule); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; transition: transform 0.45s cubic-bezier(.4,0,.2,1), background 0.15s; letter-spacing: 0; text-transform: none; }
   .view-spin-btn:hover { background: var(--paper-2); }
-  .view-panel { transition: opacity 0.2s; }
+  .view-panel { }
+  @keyframes panelOut {
+    from { opacity: 1; transform: perspective(900px) rotateY(0deg) translateY(0); }
+    to   { opacity: 0; transform: perspective(900px) rotateY(-8deg) translateY(6px); }
+  }
+  @keyframes panelIn {
+    from { opacity: 0; transform: perspective(900px) rotateY(8deg) translateY(6px); }
+    to   { opacity: 1; transform: perspective(900px) rotateY(0deg) translateY(0); }
+  }
+  .panel-leaving  { animation: panelOut 0.22s ease forwards; pointer-events: none; }
+  .panel-entering { animation: panelIn  0.32s cubic-bezier(0.16,1,0.3,1) forwards; }
 
   /* ── Identity bar ── */
   .identity-bar { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 1.75rem; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -1045,12 +1055,21 @@ function switchView() {
   viewRotation += 180;
   document.getElementById('view-spin-btn').style.transform = `rotate(${viewRotation}deg)`;
   const goingToCars = currentView === 'stays';
-  document.getElementById('view-stays').style.display = goingToCars ? 'none' : '';
-  document.getElementById('view-cars').style.display  = goingToCars ? '' : 'none';
+  const outPanel = document.getElementById(goingToCars ? 'view-stays' : 'view-cars');
+  const inPanel  = document.getElementById(goingToCars ? 'view-cars'  : 'view-stays');
   document.getElementById('vl-stays').classList.toggle('active', !goingToCars);
-  document.getElementById('vl-cars').classList.toggle('active',  goingToCars);
+  document.getElementById('vl-cars').classList.toggle('active',   goingToCars);
   currentView = goingToCars ? 'cars' : 'stays';
-  if (currentView === 'cars') loadCars();
+
+  outPanel.classList.add('panel-leaving');
+  setTimeout(() => {
+    outPanel.classList.remove('panel-leaving');
+    outPanel.style.display = 'none';
+    inPanel.style.display  = '';
+    inPanel.classList.add('panel-entering');
+    inPanel.addEventListener('animationend', () => inPanel.classList.remove('panel-entering'), { once: true });
+    if (currentView === 'cars') loadCars();
+  }, 200);
 }
 
 // ── CARS — STATE ──
