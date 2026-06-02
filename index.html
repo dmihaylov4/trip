@@ -322,7 +322,7 @@
       <div class="btn-row">
         <span class="upload-progress" id="upload-progress"></span>
         <button onclick="cancelEdit()">Cancel</button>
-        <button class="btn-primary" id="save-btn" onclick="saveListing()">File entry</button>
+        <button class="btn-primary" id="save-btn" onclick="saveListing()">сейф</button>
       </div>
 
       <div id="notices"></div>
@@ -430,7 +430,7 @@
         <div class="btn-row">
           <span class="upload-progress" id="car-upload-progress"></span>
           <button onclick="cancelCarEdit()">Cancel</button>
-          <button class="btn-primary" id="car-save-btn" onclick="saveCarListing()">File entry</button>
+          <button class="btn-primary" id="car-save-btn" onclick="saveCarListing()">сейф</button>
         </div>
         <div id="car-notices"></div>
       </div>
@@ -568,7 +568,7 @@ function setAddMode() {
   existingUrls = [];
   document.getElementById('form-title-text').textContent = 'New entry';
   document.getElementById('form-section-label').textContent = 'New entry';
-  document.getElementById('save-btn').textContent = 'File entry';
+  document.getElementById('save-btn').textContent = 'сейф';
   document.getElementById('delete-btn').style.display = 'none';
   renderExistingPreviews();
 }
@@ -1088,7 +1088,7 @@ function setCarAddMode() {
   carEditingId = null; carExistingUrls = [];
   document.getElementById('car-form-title-text').textContent = 'New entry';
   document.getElementById('car-form-section-label').textContent = 'New entry';
-  document.getElementById('car-save-btn').textContent = 'File entry';
+  document.getElementById('car-save-btn').textContent = 'сейф';
   document.getElementById('car-delete-btn').style.display = 'none';
   renderCarExistingPreviews();
 }
