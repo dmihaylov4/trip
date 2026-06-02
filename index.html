@@ -284,7 +284,7 @@
       <button class="text-btn" onclick="loadBoard()">Reload</button>
       <button class="btn-primary form-open-btn" onclick="openFormOverlay('stays')">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        New entry
+        Добави
       </button>
     </div>
   </div>
@@ -306,7 +306,7 @@
         <button class="text-btn" onclick="loadCars()">Reload</button>
         <button class="btn-primary form-open-btn" onclick="openFormOverlay('cars')">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New entry
+          Добави
         </button>
       </div>
     </div>
@@ -322,7 +322,7 @@
   <div class="form-overlay-bg" onclick="closeFormOverlay('stays')"></div>
   <div class="form-sheet">
     <div class="form-sheet-header">
-      <span class="form-sheet-title" id="form-title-text">New entry</span>
+      <span class="form-sheet-title" id="form-title-text">Добави</span>
       <div class="form-sheet-actions">
         <button class="btn-danger" id="delete-btn" style="display:none;" onclick="deleteListing()">Discard entry</button>
         <button class="form-close-btn" onclick="closeFormOverlay('stays')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -373,7 +373,7 @@
   <div class="form-overlay-bg" onclick="closeFormOverlay('cars')"></div>
   <div class="form-sheet">
     <div class="form-sheet-header">
-      <span class="form-sheet-title" id="car-form-title-text">New entry</span>
+      <span class="form-sheet-title" id="car-form-title-text">Добави</span>
       <div class="form-sheet-actions">
         <button class="btn-danger" id="car-delete-btn" style="display:none;" onclick="deleteCarListing()">Discard entry</button>
         <button class="form-close-btn" onclick="closeFormOverlay('cars')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -541,7 +541,7 @@ document.addEventListener('paste', e => {
 function setAddMode() {
   editingId = null;
   existingUrls = [];
-  document.getElementById('form-title-text').textContent = 'New entry';
+  document.getElementById('form-title-text').textContent = 'Добави';
   document.getElementById('save-btn').textContent = 'File entry';
   document.getElementById('delete-btn').style.display = 'none';
   renderExistingPreviews();
@@ -1065,7 +1065,7 @@ function toggleCarForm(forceOpen) {
 
 function setCarAddMode() {
   carEditingId = null; carExistingUrls = [];
-  document.getElementById('car-form-title-text').textContent = 'New entry';
+  document.getElementById('car-form-title-text').textContent = 'Добави';
   document.getElementById('car-save-btn').textContent = 'File entry';
   document.getElementById('car-delete-btn').style.display = 'none';
   renderCarExistingPreviews();
